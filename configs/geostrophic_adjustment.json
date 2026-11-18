@@ -1,0 +1,14 @@
+{
+  "depth_m": 100,
+  "gravity_m_s2": 9.81,
+  "lx_m": 2000000,
+  "ly_m": 2000000,
+  "latitude_deg": 45,
+  "duration_s": 86400,
+  "sample_s": 3600,
+  "experiment": "gaussian",
+  "nx": 64,
+  "ny": 64,
+  "amplitude_m": 1,
+  "sigma_m": 150000
+}

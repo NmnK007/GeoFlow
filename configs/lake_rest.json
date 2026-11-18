@@ -1,0 +1,12 @@
+{
+  "depth_m": 100,
+  "gravity_m_s2": 9.81,
+  "lx_m": 1000000,
+  "ly_m": 1000000,
+  "latitude_deg": 0,
+  "duration_s": 7200,
+  "sample_s": 600,
+  "experiment": "rest",
+  "nx": 24,
+  "ny": 16
+}

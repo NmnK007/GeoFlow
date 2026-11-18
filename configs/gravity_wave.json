@@ -1,0 +1,13 @@
+{
+  "depth_m": 100,
+  "gravity_m_s2": 9.81,
+  "lx_m": 1000000,
+  "ly_m": 1000000,
+  "latitude_deg": 0,
+  "duration_s": 7981.88571017626,
+  "sample_s": 1000,
+  "experiment": "wave",
+  "epsilon": 0.0001,
+  "nx": 64,
+  "ny": 8
+}
