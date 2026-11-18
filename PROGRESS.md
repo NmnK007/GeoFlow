@@ -1,3 +1,13 @@
+# GeoFlow v0.3 Earth — release checkpoint
+
+M9 complete. Resumed after the Earth interface gate and finalized the existing implementation, documentation and evidence. GeoFlow 0.3.0 is installed in the project virtual environment. The requested v0.2 baseline is preserved at local tag v0.2.0 (9e26a5e). v0.3 files are saved in the working tree.
+
+- Final Windows regression: 68 tests passed in 37.93 s, including the existing 56 tests and 12 new Earth tests. Ruff and git diff whitespace checks passed. All 18 idealized scientific checks passed.
+- Historical validation: outputs/earth-v03 contains region.nc, diagnostics.nc, matched.csv, validation.json, candidates.csv, particles.csv, the regional map, horizon plot and analysis settings. RMS values were independently recomputed from all 48 noninitial pairs per method in the exported CSV. Two additional ensemble particles completed 24 h. docs/earth.md records sources, licensing, physics, sensitivity and limitations.
+- Source scope: real observations and historical satellite-derived currents were retrieved and exercised. Authenticated Copernicus Toolbox acquisition, a live GLORYS download, hosted CI and browser-based visual testing remain unverified. Streamlit interaction tests ran locally. GLORYS-style local level selection and velocity units were tested with CF fixtures.
+- Known limits: a two-drifter case, mixed drogue status, surface geostrophic forcing, no subgrid coastline, and threshold-sensitive eddy candidates.
+- Next reproduction step: follow README.md to run the Earth comparison in a fresh output directory. No v0.3 implementation tasks remain. A future release requires explicit approval.
+
 # GeoFlow v0.2 — release checkpoint
 
 All seven v0.2 milestones are complete. Local annotated tag `v0.1.0` points to fa61624. The v0.2 implementation is saved in the working tree. No remote changes were made.
@@ -40,3 +50,13 @@ M3 complete: matched Gaussian losses 30.642%, 5.174%, 0.881% (baseline/minmod/MC
 M4 complete. Beta channel, reduced gravity and consistent rotational/PV/energy diagnostics implemented. Reduced-gravity beta-channel smoke run succeeded. Next: six analytic/idealized presets and quantitative physical gates.
 M5 complete. Six presets saved. Physical gates passed: Rossby -0.9080 m/s vs -0.9148 with 18.3% amplitude loss; Kelvin 3.1402 vs 3.1623; Poincare 35.4114 vs 35.3608. Ten-period balanced jet PV anomaly error 2.44%, mass drift 1.09e-15. Next: synchronized comparison, export, UI tests, release documentation.
 M6 complete: pin A, run B, synchronized overlapping times, shared field scale, diagnostic comparisons and independent trajectory/CSV export. Full suite including comparison AppTest passed (56 tests). Next: release documentation, packaging, final checks.
+
+## v0.3 Earth
+M1. Baseline 56 tests and 18 verification checks passed. Reviewed local v0.2 changes; committed and tagged v0.2.0 at 9e26a5e. Next: regional CF import, cache and spherical coordinates.
+M2 complete. Regional CF ingestion, antimeridian coordinates, provenance and SHA-256 keyed cache verified by NetCDF roundtrip and distance tests.
+M3 complete. Spherical velocity-gradient tensor, KE/EKE, vorticity, strain, OW and geostrophic diagnostics implemented. Synthetic vortex center gives positive rotation and negative OW. Next: conservative interpolation footprints and passive tracking.
+M4 complete. Forward/backward Euler and RK4, multiple releases, strict trilinear footprints and cell-crossing checks implemented. Next: analytic convergence, masking and diagnostics tests.
+M5 complete. Six offline Earth tests passed. Rotating analytic field final refinement Euler order 1.0083 and RK4 order 3.99998; uniform/backward/time-dependent and land crossing verified. Next: eddy sensitivity and observed drifter comparison.
+M6 complete. Four-connected hemisphere-aware OW/vorticity/SLA candidates. Fixture radius 40.38, 31.45, 23.69 km for OW thresholds 0, -1e-10, -2e-10. Eddy/metric tests passed. Next: Arabian Sea validation at first eligible hourly release per drifter.
+M7 complete. Three-day historical NOAA mirror DUACS + GDP retrieval succeeded. All two eligible drifters tracked 24 h, 48 scored hourly horizons, no terminations. RK4 mean/RMS/final separation 5.108/5.742/8.110 km. Stationary 5.778/7.024/10.233 km; constant observed velocity 5.403/6.590/10.344 km. One drogue lost before release. Outputs in outputs/earth-arabian. Next: separate Earth UI, offline CI, documentation.
+M8 complete. Separate Earth laboratory supports local/synthetic import, selected level and time, geographic fields, releases/ensembles, eddy candidates, GDP comparison and exports. Earth AppTest loaded fixture, integrated and returned to simulation. All 67 tests passed at gate. Next: finalize provenance, case documentation and release checks.

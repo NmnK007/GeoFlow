@@ -6,3 +6,9 @@ __pycache__/
 outputs/
 build/
 dist/
+
+data/
+*.nc
+*.nc4
+.env
+.copernicusmarine/

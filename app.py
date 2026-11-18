@@ -15,8 +15,22 @@ from geoflow.solver import run_simulation
 
 ROOT = Path(__file__).resolve().parent
 PRESETS = sorted((ROOT / "configs").glob("*.json"))
-st.set_page_config(page_title="GeoFlow v0.2", layout="wide")
-st.title("GeoFlow v0.2")
+st.set_page_config(page_title="GeoFlow v0.3", layout="wide")
+st.title("GeoFlow v0.3")
+mode = st.sidebar.radio("Laboratory", ["Idealized simulation", "Earth"], key="lab_mode")
+if mode == "Earth":
+    try:
+        from geoflow.earth.ui import laboratory
+
+        laboratory()
+    except ImportError as exc:
+        st.error(
+            f'Install the optional Earth packages with python -m pip install -e ".[earth,ui]". {exc}'
+        )
+    except (ValueError, OSError, RuntimeError, KeyError) as exc:
+        st.error(str(exc))
+    st.stop()
+
 st.caption("Single-layer rotating shallow water · flat bottom · local Cartesian grid")
 
 

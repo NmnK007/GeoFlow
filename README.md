@@ -1,6 +1,20 @@
-# GeoFlow v0.2 — Dynamics
+# GeoFlow v0.3 — Earth
 
 GeoFlow integrates nonlinear rotating shallow water on a rectangular, flat-bottom domain. The CLI and local laboratory use the same NumPy solver. Eleven JSON presets specify initial-value problems in SI units. Existing configs default to the v0.1 method. Select MUSCL and a limiter for higher-order runs. See [Dynamics and measured verification](docs/dynamics.md).
+
+## Earth laboratory
+
+Select **Earth** in the Streamlit sidebar to inspect imported ocean currents, release passive particles and compare their trajectories with NOAA drifters. Earth uses external fields. The **Idealized simulation** mode retains both shallow-water solvers.
+
+Install the optional packages with `python -m pip install -e ".[dev,ui,earth]"`. For the historical Arabian Sea study, run the following from this checkout with the environment active.
+
+```sh
+python -m geoflow.earth.cli fetch
+python -m geoflow.earth.cli analyze --file data/arabian-july-2020/currents.nc --drifters data/arabian-july-2020/drifters.csv --out outputs/my-earth-study
+python -m streamlit run app.py
+```
+
+The default Earth input paths match those downloads. **Load region**, then **Compare observed tracks** inside the drifter panel. For offline exploration choose **Synthetic verification fixture**. See [Earth methods, acquisition, results and exercises](docs/earth.md).
 
 ## Run locally
 
