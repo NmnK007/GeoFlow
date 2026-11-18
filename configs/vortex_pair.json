@@ -1,0 +1,11 @@
+{
+  "scheme": "muscl",
+  "latitude_deg": 45,
+  "experiment": "vortices",
+  "epsilon": 0.007,
+  "sigma_m": 70000,
+  "nx": 48,
+  "ny": 48,
+  "duration_s": 86400,
+  "sample_s": 7200
+}

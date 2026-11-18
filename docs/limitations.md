@@ -1,4 +1,6 @@
-# Interpretation and release limits
+# v0.1 baseline limits
+
+For the current release see [v0.2 model and experiment limits](dynamics.md).
 
 GeoFlow v0.1 models a single homogeneous hydrostatic layer of positive depth on a local plane. Periodic edges recirculate disturbances. Free-slip walls reflect waves. Constant f describes a chosen latitude locally. The setup excludes wind, friction, vertical stratification, bathymetry and wetting or drying.
 

@@ -1,0 +1,9 @@
+{
+  "scheme": "muscl",
+  "latitude_deg": 45,
+  "experiment": "poincare",
+  "nx": 48,
+  "ny": 8,
+  "duration_s": 8000,
+  "sample_s": 800
+}

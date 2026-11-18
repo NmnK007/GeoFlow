@@ -1,0 +1,15 @@
+{
+  "scheme": "muscl",
+  "latitude_deg": 0,
+  "experiment": "shear",
+  "boundary_y": "wall",
+  "lx_m": 200000,
+  "ly_m": 120000,
+  "nx": 64,
+  "ny": 48,
+  "sigma_m": 12000,
+  "u0_m_s": 0.5,
+  "reduced_gravity_m_s2": 0.04,
+  "duration_s": 250000,
+  "sample_s": 25000
+}

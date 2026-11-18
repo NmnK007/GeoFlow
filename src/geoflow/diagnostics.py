@@ -8,7 +8,7 @@ def integrals(
     h: np.ndarray, u: np.ndarray, v: np.ndarray, c: Config
 ) -> tuple[float, float]:
     area = (c.lx_m / c.nx) * (c.ly_m / c.ny)
-    energy = 0.5 * (h * (u * u + v * v) + c.gravity_m_s2 * (h - c.depth_m) ** 2)
+    energy = 0.5 * (h * (u * u + v * v) + c.g * (h - c.depth_m) ** 2)
     return float(area * h.sum()), float(area * energy.sum())
 
 
@@ -35,4 +35,4 @@ def vorticity(h: np.ndarray, u: np.ndarray, v: np.ndarray, c: Config) -> np.ndar
 def potential_vorticity(
     h: np.ndarray, u: np.ndarray, v: np.ndarray, c: Config
 ) -> np.ndarray:
-    return (vorticity(h, u, v, c) + c.f) / h
+    return (vorticity(h, u, v, c) + c.rotation) / h

@@ -1,0 +1,13 @@
+{
+  "scheme": "muscl",
+  "latitude_deg": 45,
+  "experiment": "kelvin",
+  "boundary_y": "wall",
+  "reduced_gravity_m_s2": 0.1,
+  "lx_m": 250000,
+  "ly_m": 180000,
+  "nx": 48,
+  "ny": 32,
+  "duration_s": 20000,
+  "sample_s": 2000
+}

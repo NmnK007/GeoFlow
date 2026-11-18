@@ -9,6 +9,9 @@ from .solver import SimulationResult
 LABELS = {
     "Height anomaly": "m",
     "Speed": "m/s",
+    "Absolute vorticity": "1/s",
+    "Kinetic energy density": "m³/s²",
+    "Potential energy density": "m³/s²",
     "East velocity": "m/s",
     "North velocity": "m/s",
     "Relative vorticity": "1/s",
@@ -20,6 +23,12 @@ def field(r: SimulationResult, name: str, i: int) -> np.ndarray:
     h, u, v = r.h[i], r.u[i], r.v[i]
     if name == "Height anomaly":
         return h - r.config.depth_m
+    if name == "Absolute vorticity":
+        return vorticity(h, u, v, r.config) + r.config.rotation
+    if name == "Kinetic energy density":
+        return 0.5 * h * (u * u + v * v)
+    if name == "Potential energy density":
+        return 0.5 * r.config.g * (h - r.config.depth_m) ** 2
     if name == "Speed":
         return np.hypot(u, v)
     if name == "East velocity":

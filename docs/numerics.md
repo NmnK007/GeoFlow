@@ -1,4 +1,6 @@
-# From the equations to one solver step
+# From the equations to one baseline solver step
+
+See [Dynamics](dynamics.md) for higher-order reconstruction, variable rotation and reduced gravity.
 
 ## Model and conserved state
 

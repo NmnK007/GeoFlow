@@ -5,6 +5,7 @@ from dataclasses import replace
 
 import numpy as np
 
+from .benchmarks import balanced_stability, diffusion, propagation, refinement
 from .config import Config
 from .solver import run_simulation
 
@@ -122,6 +123,11 @@ def verify() -> dict:
     for boundary in ("periodic", "wall"):
         for latitude in (0, 45):
             record(f"bump_{boundary}_{latitude}", bump, boundary, latitude)
+    for mode in ("rossby", "kelvin", "poincare"):
+        record(mode, propagation, mode)
+    record("ten_period_jet", balanced_stability)
+    record("refinement", refinement)
+    record("gaussian_diffusion", diffusion)
     return {
         "passed": all(c["passed"] for c in checks.values()),
         "checks": checks,

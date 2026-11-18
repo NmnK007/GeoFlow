@@ -25,17 +25,22 @@ def signal_speed(q: np.ndarray, g: float, direction: int) -> np.ndarray:
 
 
 def rusanov(
-    left: np.ndarray, right: np.ndarray, g: float, direction: int
+    left: np.ndarray,
+    right: np.ndarray,
+    g: float,
+    direction: int,
+    speed: np.ndarray | None = None,
 ) -> np.ndarray:
-    speed = np.maximum(
-        signal_speed(left, g, direction), signal_speed(right, g, direction)
-    )
+    if speed is None:
+        speed = np.maximum(
+            signal_speed(left, g, direction), signal_speed(right, g, direction)
+        )
     return 0.5 * (
         flux(left, g, direction) + flux(right, g, direction) - speed * (right - left)
     )
 
 
-def rotate(q: np.ndarray, angle: float) -> np.ndarray:
+def rotate(q: np.ndarray, angle: float | np.ndarray) -> np.ndarray:
     h, mx, my = q
-    c, s = math.cos(angle), math.sin(angle)
+    c, s = np.cos(angle), np.sin(angle)
     return np.stack((h, c * mx + s * my, c * my - s * mx))

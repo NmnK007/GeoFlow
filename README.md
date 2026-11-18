@@ -1,6 +1,6 @@
-# GeoFlow v0.1
+# GeoFlow v0.2 — Dynamics
 
-GeoFlow integrates nonlinear rotating shallow water on a rectangular, flat-bottom domain. The CLI and local laboratory use the same NumPy solver. Five JSON presets specify reproducible initial-value problems in SI units.
+GeoFlow integrates nonlinear rotating shallow water on a rectangular, flat-bottom domain. The CLI and local laboratory use the same NumPy solver. Eleven JSON presets specify initial-value problems in SI units. Existing configs default to the v0.1 method. Select MUSCL and a limiter for higher-order runs. See [Dynamics and measured verification](docs/dynamics.md).
 
 ## Run locally
 
@@ -16,6 +16,10 @@ python -m streamlit run app.py
 ```
 
 Use `-e ".[dev]"` for CLI development or `-e .` for simulations alone. Choose a fresh output directory for each run. Explicit `--overwrite` permits replacing named artifacts. Check metadata status before reading any fields from a reused directory. A simultaneous writer is refused. After a hard interruption use a fresh output directory.
+
+## Compare two runs
+
+In the laboratory, run the Gaussian bump and select **Pin current run as A**. Choose MUSCL with MC, leave the physical parameters and grid fixed, and run again. Inspect the two height maps at the same time and select the energy diagnostic. **Save comparison artifacts** writes both complete runs, a synchronized CSV and metadata under outputs. You can also change preset, resolution, latitude or duration between runs.
 
 ## Read and extend
 

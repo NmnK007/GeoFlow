@@ -1,4 +1,6 @@
-# Experiments and evidence
+# v0.1 experiments and evidence
+
+The six additional presets and their benchmarks are in [Dynamics](dynamics.md).
 
 All presets use g=9.81 m/s², H=100 m and periodic boundaries. JSON lengths and times are in metres and seconds. Unspecified keys use the defaults in `config.Config`. The normalized configuration in metadata includes those defaults.
 

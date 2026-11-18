@@ -23,3 +23,15 @@ def test_lab_interactions():
     assert not app.warning and app.session_state["result"].config.nx == 40
     app.button(key="reset_lab").click().run()
     assert not app.exception and "result" not in app.session_state
+
+
+def test_lab_comparison():
+    testing = pytest.importorskip("streamlit.testing.v1")
+    app = testing.AppTest.from_file(Path("app.py").resolve(), default_timeout=30).run()
+    app.button(key="run_lab").click().run()
+    next(b for b in app.button if b.label == "Pin current run as A").click().run()
+    app.selectbox(key="gaussian_bump_scheme").select("muscl").run()
+    app.button(key="run_lab").click().run()
+    assert not app.exception
+    assert any(b.label == "Save comparison artifacts" for b in app.button)
+    assert app.session_state["result"].config.scheme == "muscl"

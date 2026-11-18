@@ -1,0 +1,13 @@
+{
+  "scheme": "muscl",
+  "latitude_deg": 45,
+  "experiment": "rossby",
+  "plane": "beta",
+  "boundary_y": "wall",
+  "lx_m": 4000000.0,
+  "ly_m": 1500000.0,
+  "nx": 48,
+  "ny": 24,
+  "duration_s": 400000,
+  "sample_s": 40000
+}

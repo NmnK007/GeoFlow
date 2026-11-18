@@ -32,6 +32,15 @@ def main(argv: list[str] | None = None) -> int:
                     ["nx", "relative_l2", "speed_m_s", "order"],
                 )
                 convergence_plot(report["convergence"]).savefig(out / "convergence.png")
+                studies = report.get("checks", {}).get("refinement", {})
+                rows = [
+                    dict(method=method, **row)
+                    for method, series in studies.items()
+                    if isinstance(series, list)
+                    for row in series
+                ]
+                if rows:
+                    write_csv(out / "scheme_convergence.csv", rows, list(rows[0]))
                 print(
                     f"Verification {'passed' if report['passed'] else 'failed'}: {out}"
                 )

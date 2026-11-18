@@ -1,0 +1,10 @@
+{
+  "scheme": "muscl",
+  "latitude_deg": 45,
+  "experiment": "balanced",
+  "nx": 8,
+  "ny": 48,
+  "epsilon": 0.001,
+  "duration_s": 60000,
+  "sample_s": 6000
+}
