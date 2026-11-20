@@ -13,6 +13,13 @@ def test_earth_mode():
     ).run()
     next(w for w in app.button if w.label == "Load region").click().run()
     assert not app.exception and not app.error
+    loaded = app.session_state["earth_loaded"][1]
+    derived = app.session_state["earth_fields"][1]
+    next(w for w in app.selectbox if w.label == "Ocean field").select("eke").run()
+    assert app.session_state["earth_fields"][1] is derived
+    next(w for w in app.button if w.label == "Load region").click().run()
+    assert app.session_state["earth_loaded"][1] is loaded
+    assert app.session_state["earth_fields"][1] is derived
     next(w for w in app.button if w.label == "Integrate particles").click().run()
     assert not app.exception and not app.error
     assert app.session_state["earth_tracks"][0].status == "completed"

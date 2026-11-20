@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 pytest.importorskip("xarray")
-from geoflow.earth.diagnostics import fields
+from geoflow.earth.diagnostics import current_means, fields
 from geoflow.earth.fixture import fixture
 from geoflow.earth.geo import R
 from geoflow.earth.tracking import Current, track
@@ -102,3 +102,30 @@ def test_spacetime_interpolation_across_antimeridian():
     t = 1.65
     expected = [2 * 0.32 - 0.38 + 0.125 * 0.32 * 0.38 * t, t + 0.38]
     np.testing.assert_allclose(flow.sample(t * 21600, p), expected, rtol=0, atol=1e-13)
+
+
+def test_temporal_means_pair_missing_velocity_components():
+    ds = fixture()
+    ds.u.values[0, 1, 2] = np.nan
+    ds.v.values[2, 1, 2] = np.nan
+    ds.v.values[:, 3, 4] = np.nan
+    valid = ds.u.notnull() & ds.v.notnull()
+    for actual, field in zip(current_means(ds), (ds.u, ds.v), strict=True):
+        np.testing.assert_allclose(actual, field.where(valid).mean("time").values)
+
+
+def test_preview_preserves_extent_and_full_color_range():
+    from geoflow.earth.plots import regional_map
+
+    ds = fixture()
+    d = fields(ds, 0)
+    d.speed.values[:] = 1
+    d.speed.values[-1, 0] = 9
+    full = regional_map(ds, d, "speed", 0).axes[0].collections[0]
+    preview = regional_map(ds, d, "speed", 0, display_limit=5).axes[0].collections[0]
+    assert preview.get_array().size == 25
+    assert full.get_clim() == preview.get_clim() == (1, 9)
+    for end in (0, -1):
+        np.testing.assert_array_equal(
+            full.get_coordinates()[end, end], preview.get_coordinates()[end, end]
+        )

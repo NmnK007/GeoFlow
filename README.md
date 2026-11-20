@@ -1,4 +1,6 @@
-# GeoFlow v0.3 — Earth
+# GeoFlow v0.3.1 — Earth
+
+The performance update speeds up snapshot changes and repeated Earth analysis. See the [measured performance and scientific verification report](docs/performance.md).
 
 GeoFlow integrates nonlinear rotating shallow water on a rectangular, flat-bottom domain. The CLI and local laboratory use the same NumPy solver. Eleven JSON presets specify initial-value problems in SI units. Existing configs default to the v0.1 method. Select MUSCL and a limiter for higher-order runs. See [Dynamics and measured verification](docs/dynamics.md).
 

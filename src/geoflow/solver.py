@@ -61,7 +61,11 @@ def metadata(c: Config) -> dict:
 def trial(q: np.ndarray, c: Config, dt: float) -> np.ndarray:
     if c.scheme == "muscl":
         angle = c.rotation * (0.5 * dt)
-        return rotate(rk2(rotate(q, angle), c, dt), angle)
+        return (
+            rk2(q, c, dt)
+            if c.plane == "f" and c.f == 0
+            else rotate(rk2(rotate(q, angle), c, dt), angle)
+        )
     fx = faces(q, c.g, 0, c.boundary_x)
     fy = faces(q, c.g, 1, c.boundary_y)
     transported = (
@@ -69,7 +73,11 @@ def trial(q: np.ndarray, c: Config, dt: float) -> np.ndarray:
         - dt / (c.lx_m / c.nx) * np.diff(fx, axis=2)
         - dt / (c.ly_m / c.ny) * np.diff(fy, axis=1)
     )
-    return rotate(transported, c.rotation * dt)
+    return (
+        transported
+        if c.plane == "f" and c.f == 0
+        else rotate(transported, c.rotation * dt)
+    )
 
 
 def advance(
@@ -175,7 +183,7 @@ def run_simulation(
             "relative_energy_change": (energy - e0) / e0 if e0 else None,
             "min_h_m": float(h[index].min()),
             "max_h_m": float(h[index].max()),
-            "max_speed_m_s": float(np.hypot(u[index], v[index]).max()),
+            "max_speed_m_s": speed,
             "wall_time_s": perf_counter() - start,
         }
         if any(

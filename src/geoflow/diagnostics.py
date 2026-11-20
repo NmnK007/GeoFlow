@@ -1,6 +1,5 @@
 import numpy as np
 
-from .boundaries import ghost
 from .config import Config
 
 
@@ -14,21 +13,22 @@ def integrals(
 
 def vorticity(h: np.ndarray, u: np.ndarray, v: np.ndarray, c: Config) -> np.ndarray:
     # Tangential velocities have even parity at a free-slip wall.
-    fields = np.stack((h, u, v))
+    common = np.result_type(h, u, v)
 
-    def derivative(direction: int, boundary: str, spacing: float) -> np.ndarray:
-        component = 2 - direction
-        axis = 2 - direction
-        edges = [
-            ghost(fields, direction, side, boundary)[component]
-            for side in (False, True)
-        ]
-        line = np.concatenate((edges[0], fields[component], edges[1]), axis=axis - 1)
-        line = line.swapaxes(axis - 1, -1)
-        return ((line[..., 2:] - line[..., :-2]) / (2 * spacing)).swapaxes(-1, axis - 1)
+    def derivative(field, axis, boundary, spacing):
+        field = field.astype(common, copy=False)
+        line = field.swapaxes(axis, -1)
+        result = np.empty_like(
+            line, dtype=common if np.issubdtype(common, np.inexact) else float
+        )
+        result[..., 1:-1] = line[..., 2:] - line[..., :-2]
+        result[..., 0] = line[..., 1] - line[..., -1 if boundary == "periodic" else 0]
+        result[..., -1] = line[..., 0 if boundary == "periodic" else -1] - line[..., -2]
+        result /= 2 * spacing
+        return result.swapaxes(-1, axis)
 
-    return derivative(0, c.boundary_x, c.lx_m / c.nx) - derivative(
-        1, c.boundary_y, c.ly_m / c.ny
+    return derivative(v, 1, c.boundary_x, c.lx_m / c.nx) - derivative(
+        u, 0, c.boundary_y, c.ly_m / c.ny
     )
 
 

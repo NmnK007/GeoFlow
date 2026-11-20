@@ -20,6 +20,18 @@ def write_rows(path, rows, columns):
         writer.writerows(rows)
 
 
+def match_observations(ds, obs_path, hours, dt):
+    report, records = validate(ds, observations(obs_path), hours, dt)
+    digest = fingerprint(obs_path)
+    manifest = Path(str(obs_path) + ".json")
+    if manifest.exists():
+        info = json.loads(manifest.read_text())
+        if info.get("sha256") == digest:
+            report["observational_provenance"] = info
+    report.update(drifter_file=Path(obs_path).name, drifter_sha256=digest)
+    return report, records
+
+
 def analyze(
     ds,
     out: Path,
@@ -32,25 +44,27 @@ def analyze(
     minimum=4,
     tracks=(),
     particle_config=None,
+    *,
+    prepared=None,
+    matched=None,
 ):
     out.mkdir(parents=True, exist_ok=True)
     if any(out.iterdir()):
         raise ValueError("choose an empty output directory")
-    d = fields(ds, index)
-    eddies = candidates(d, ow, sla, minimum) if "sla" in d else []
+    if prepared is None:
+        d = fields(ds, index)
+        eddies = candidates(d, ow, sla, minimum) if "sla" in d else []
+    else:
+        d, eddies = prepared
     report = None
     records = []
     if obs_path:
         if ds.attrs.get("source_kind") == "synthetic":
             raise ValueError("observational comparison requires external currents")
-        report, records = validate(ds, observations(obs_path), hours, dt)
-        manifest = Path(str(obs_path) + ".json")
-        if manifest.exists():
-            info = json.loads(manifest.read_text())
-            if info.get("sha256") == fingerprint(obs_path):
-                report["observational_provenance"] = info
-        report.update(
-            drifter_file=Path(obs_path).name, drifter_sha256=fingerprint(obs_path)
+        report, records = (
+            matched
+            if matched is not None
+            else match_observations(ds, obs_path, hours, dt)
         )
         (out / "validation.json").write_text(
             json.dumps(report, indent=2, allow_nan=False)
@@ -81,7 +95,7 @@ def analyze(
             "mean_vorticity_s_inv",
         ],
     )
-    particle_rows = [
+    particle_rows = (
         {
             "particle": i,
             "time_s": float(t),
@@ -91,7 +105,7 @@ def analyze(
         }
         for i, tr in enumerate(tracks)
         for t, p in zip(tr.time, tr.position, strict=True)
-    ]
+    )
     write_rows(
         out / "particles.csv",
         particle_rows,

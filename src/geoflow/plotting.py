@@ -63,7 +63,8 @@ def heatmap(
     if signed:
         high = max(abs(low), high)
         low = -high
-    fig = Figure(figsize=(7, 4.5), layout="constrained")
+    fig = Figure(figsize=(7, 4.5))
+    fig.subplots_adjust(left=0.13, right=0.9, bottom=0.14, top=0.90)
     ax = fig.subplots()
     image = ax.imshow(
         a,
@@ -75,7 +76,7 @@ def heatmap(
         vmax=high,
     )
     fig.colorbar(image, ax=ax, label=f"{name} ({LABELS[name]})")
-    if arrows and np.any(np.hypot(r.u[i], r.v[i])):
+    if arrows and (np.any(r.u[i]) or np.any(r.v[i])):
         sx, sy = max(1, r.config.nx // 16), max(1, r.config.ny // 16)
         ax.quiver(
             r.x[::sx] / 1000,

@@ -27,17 +27,14 @@ def interfaces(q, c, direction, boundary):
     )
     jumps = np.diff(padded, axis=axis).swapaxes(axis, -1)
     dq = slope(jumps[..., :-1], jumps[..., 1:], c.limiter).swapaxes(axis, -1)
-    lo, hi = q - 0.5 * dq, q + 0.5 * dq
-    # Wall exterior is the mirror of the reconstructed interior trace.
-    left_edge = hi if boundary == "periodic" else lo
-    left = np.concatenate((ghost(left_edge, direction, False, boundary), hi), axis=axis)
-    right = np.concatenate(
-        (lo, ghost(lo if boundary == "periodic" else hi, direction, True, boundary)),
-        axis=axis,
-    )
+    dq *= 0.5
+    lo, hi = q - dq, q + dq
     if boundary == "periodic":
-        left = left.swapaxes(axis, -1)[..., :-1].swapaxes(axis, -1)
-        right = right.swapaxes(axis, -1)[..., :-1].swapaxes(axis, -1)
+        left, right = np.roll(hi, 1, axis=axis), lo
+    else:
+        # The exterior wall trace mirrors the reconstructed interior.
+        left = np.concatenate((ghost(lo, direction, False, boundary), hi), axis=axis)
+        right = np.concatenate((lo, ghost(hi, direction, True, boundary)), axis=axis)
     if not valid(left, c.min_depth_m) or not valid(right, c.min_depth_m):
         raise InvalidStage("invalid face state")
     speeds = np.maximum(

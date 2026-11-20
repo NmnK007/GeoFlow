@@ -2,8 +2,22 @@ import numpy as np
 from matplotlib.figure import Figure
 
 
-def regional_map(ds, d, name, index, tracks=(), eddies=(), records=()):
-    fig = Figure(figsize=(7, 5), layout="constrained")
+def display_axis(centers, limit):
+    """Cell boundaries and representative indices for a rectilinear preview."""
+    edges = np.empty(len(centers) + 1)
+    edges[1:-1] = 0.5 * (centers[:-1] + centers[1:])
+    edges[0] = 2 * centers[0] - edges[1]
+    edges[-1] = 2 * centers[-1] - edges[-2]
+    stride = (len(centers) + limit - 1) // limit
+    cuts = np.append(np.arange(0, len(centers), stride), len(centers))
+    return edges[cuts], (cuts[:-1] + cuts[1:] - 1) // 2
+
+
+def regional_map(
+    ds, d, name, index, tracks=(), eddies=(), records=(), *, display_limit=None
+):
+    fig = Figure(figsize=(7, 5))
+    fig.subplots_adjust(left=0.14, right=0.90, bottom=0.14, top=0.90)
     ax = fig.subplots()
     a = d[name]
     vals = a.values[np.isfinite(a.values)]
@@ -12,7 +26,14 @@ def regional_map(ds, d, name, index, tracks=(), eddies=(), records=()):
         opts = {"cmap": "RdBu_r", "vmin": -limit, "vmax": limit}
     else:
         opts = {"cmap": "viridis"}
-    m = ax.pcolormesh(ds.lon, ds.lat, a, shading="auto", **opts)
+    if display_limit and max(a.shape) > display_limit:
+        x, ix = display_axis(ds.lon.values, display_limit)
+        y, iy = display_axis(ds.lat.values, display_limit)
+        if len(vals) and "vmin" not in opts:
+            opts.update(vmin=float(vals.min()), vmax=float(vals.max()))
+        m = ax.pcolormesh(x, y, a.values[np.ix_(iy, ix)], shading="flat", **opts)
+    else:
+        m = ax.pcolormesh(ds.lon, ds.lat, a, shading="auto", **opts)
     fig.colorbar(m, ax=ax, label=f"{name} ({a.attrs['units']})")
     center = float(ds.lon.mean())
 
@@ -22,26 +43,26 @@ def regional_map(ds, d, name, index, tracks=(), eddies=(), records=()):
     # Local equirectangular projection at the latitude of the panel centre.
     ax.set_aspect(1 / np.cos(np.radians(float(ds.lat.mean()))))
     skip = (
-        slice(None, None, max(1, len(ds.lat) // 15)),
-        slice(None, None, max(1, len(ds.lon) // 20)),
+        slice(None, None, max(1, (len(ds.lat) + 14) // 15)),
+        slice(None, None, max(1, (len(ds.lon) + 19) // 20)),
     )
-    x, y = np.meshgrid(ds.lon, ds.lat)
+
     ax.quiver(
-        x[skip],
-        y[skip],
+        ds.lon.values[skip[1]],
+        ds.lat.values[skip[0]],
         ds.u.values[index][skip],
         ds.v.values[index][skip],
         color="0.25",
     )
     for tr in tracks:
         ax.plot(tr.position[:, 0], tr.position[:, 1], ".-", lw=1)
-    for candidate in eddies:
-        ax.plot(
-            longitude(candidate["longitude"]),
-            candidate["latitude"],
-            "o",
-            mfc="none",
-            mec="black",
+    if eddies:
+        ax.scatter(
+            longitude([c["longitude"] for c in eddies]),
+            [c["latitude"] for c in eddies],
+            s=30,
+            facecolors="none",
+            edgecolors="black",
         )
     if records:
         for ident in sorted({row["ID"] for row in records}):

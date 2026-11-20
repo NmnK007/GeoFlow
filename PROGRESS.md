@@ -1,3 +1,13 @@
+# GeoFlow v0.3.1 — final release checkpoint
+
+M7 complete. The clean comparison against annotated tag `v0.3.0` (`5576cf9`) is recorded in [the performance report](docs/performance.md) and [the raw measurements](benchmarks/results-v0.3.1.json). These final measurements supersede the provisional numbers in the milestone history.
+
+- The Streamlit fragments, per-session plot and dataset reuse, diagnostic and flux changes, and labelled large-grid preview are complete. Scientific exports retain full resolution.
+- Clean Windows runs passed all 68 baseline tests and 71 patch tests. Both builds passed all 18 scientific checks with identical reported metrics. Gaussian field hashes and historical Earth results matched.
+- Chrome snapshot latency fell from 655 to 446 ms. Repeated region loading fell from 777 to 36 ms in AppTest. Peak process working set fell from 234.9 to 192.6 MiB. The first Run click in Chrome rose from 2.05 to 2.63 s. Remote latency, hosted CI and multi-user capacity were outside the measurement.
+- The project venv was rebuilt at the same dependency versions after damaged installed files were detected. The final wheel integrity audit reported zero differences. Numba was benchmarked separately. Streamlit and NumPy remain the release implementations.
+- Pending v0.3.1 work is complete. To reproduce, follow the commands in the performance report using a fresh output directory. Local profiles, both scientific reports and historical exports are in `outputs/perf-clean`. Development stopped at v0.3.1.
+
 # GeoFlow v0.3 Earth — release checkpoint
 
 M9 complete. Resumed after the Earth interface gate and finalized the existing implementation, documentation and evidence. GeoFlow 0.3.0 is installed in the project virtual environment. The requested v0.2 baseline is preserved at local tag v0.2.0 (9e26a5e). v0.3 files are saved in the working tree.
@@ -60,3 +70,15 @@ M5 complete. Six offline Earth tests passed. Rotating analytic field final refin
 M6 complete. Four-connected hemisphere-aware OW/vorticity/SLA candidates. Fixture radius 40.38, 31.45, 23.69 km for OW thresholds 0, -1e-10, -2e-10. Eddy/metric tests passed. Next: Arabian Sea validation at first eligible hourly release per drifter.
 M7 complete. Three-day historical NOAA mirror DUACS + GDP retrieval succeeded. All two eligible drifters tracked 24 h, 48 scored hourly horizons, no terminations. RK4 mean/RMS/final separation 5.108/5.742/8.110 km. Stationary 5.778/7.024/10.233 km; constant observed velocity 5.403/6.590/10.344 km. One drogue lost before release. Outputs in outputs/earth-arabian. Next: separate Earth UI, offline CI, documentation.
 M8 complete. Separate Earth laboratory supports local/synthetic import, selected level and time, geographic fields, releases/ensembles, eddy candidates, GDP comparison and exports. Earth AppTest loaded fixture, integrated and returned to simulation. All 67 tests passed at gate. Next: finalize provenance, case documentation and release checks.
+
+## v0.3.1 performance audit
+M1: clean v0.3.0 annotated checkpoint 5576cf9, baseline profiles and timings saved to outputs/perf030. Snapshot 548 ms, Earth field 333 ms, Gaussian baseline solver 37 ms. Next: remove repeated rendering and I/O, optimize scientific kernels, repeat identical workloads and verification.
+M2: lazy simulation rendering, fragments, form, per-session PNG/data reuse, metadata cache, streaming temporal means, vectorized face buffers implemented. JIT prototype tested separately on compatible wheels. Next: paired release benchmarks and regression gates.
+
+M3. Six matched release benchmark processes completed. Peak working set 233.7 to 193.9 MiB. Snapshot 518 to 163 ms. First Run click and first Earth switch were slower. All 18 scientific check dictionaries and the historical Earth numerical exports match v0.3. Initial pytest discovery also collected the archived release and disposable Numba dependency tests under outputs. Restricted discovery to the project tests directory. Next: rerun the full suite, finalize installed package and report.
+
+M4. Full project suite passed (71). Editable package metadata is 0.3.1. A true Chromium launch found an unreadable watchdog directory in the local venv (Windows error 1392), which AppTest did not exercise. Restored the identical watchdog 7.1.0 wheel, retained original directories in outputs/perf-repair, checked dependencies and repeated both browser sessions. Median keyboard-to-updated-map time 629 to 297 ms. Next: finalize paired numbers from the repaired environment and document limitations.
+
+M5. The final-source run passed 71 tests, and all 18 scientific checks matched v0.3 again. A separate wheel RECORD audit found damaged dependency files beyond the watcher, including AnyIO and pandas. Preserving the local environment and staging the pinned wheels for a clean reproducibility run. Next: repeat benchmarks, unit/scientific checks, historical outputs and browser response with the clean environment, then freeze the release report.
+
+M6. Rebuilt .venv at its original path using the exact 50 package versions. pip check passed and all installed wheel RECORD hashes matched (zero differences). The previous environment is retained under outputs/perf-repair/original-venv. Clean final measurements and both scientific gates run from outputs/perf-release/clean_gate.ps1 and verify_clean.ps1; evidence goes to outputs/perf-clean.

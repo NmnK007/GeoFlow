@@ -6,7 +6,21 @@ import xarray as xr
 from .geo import R
 
 
-def fields(ds, index):
+def current_means(ds):
+    # Keep one pair of horizontal sums irrespective of the number of samples.
+    total_u = np.zeros(ds.u.shape[1:], dtype=float)
+    total_v = np.zeros_like(total_u)
+    count = np.zeros(total_u.shape, dtype=np.int64)
+    for u, v in zip(ds.u.values, ds.v.values, strict=True):
+        both = ~(np.isnan(u) | np.isnan(v))
+        np.add(total_u, u, out=total_u, where=both)
+        np.add(total_v, v, out=total_v, where=both)
+        count += both
+    denom = np.where(count, count, np.nan)
+    return total_u / denom, total_v / denom
+
+
+def fields(ds, index, means=None):
     u, v = (ds[n].values[index] for n in ("u", "v"))
     lat = np.radians(ds.lat.values)[:, None]
     lon = np.radians(ds.lon.values)
@@ -30,8 +44,7 @@ def fields(ds, index):
     zeta = vx - uy
     normal, shear = ux - vy, vx + uy
     f = 2 * 7.292115e-5 * np.sin(lat)
-    vel = ds[["u", "v"]].where(ds.u.notnull() & ds.v.notnull())
-    mean = vel.mean("time", skipna=True)
+    mean_u, mean_v = current_means(ds) if means is None else means
     result = xr.Dataset(coords={"lat": ds.lat, "lon": ds.lon})
 
     def add(n, a, unit):
@@ -44,7 +57,7 @@ def fields(ds, index):
         "degrees clockwise from north",
     )
     add("ke", 0.5 * (u * u + v * v), "m2/s2")
-    add("eke", 0.5 * ((u - mean.u) ** 2 + (v - mean.v) ** 2), "m2/s2")
+    add("eke", 0.5 * ((u - mean_u) ** 2 + (v - mean_v) ** 2), "m2/s2")
     for n, a in (
         ("vorticity", zeta),
         ("absolute_vorticity", zeta + f),

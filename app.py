@@ -5,24 +5,19 @@ from pathlib import Path
 from uuid import uuid4
 
 import streamlit as st
-from matplotlib.figure import Figure
 
-from geoflow.comparison import common_times, export_comparison, frame
 from geoflow.config import load_config
-from geoflow.io import export, output_directory
-from geoflow.plotting import LABELS, heatmap, limits
-from geoflow.solver import run_simulation
 
 ROOT = Path(__file__).resolve().parent
 PRESETS = sorted((ROOT / "configs").glob("*.json"))
-st.set_page_config(page_title="GeoFlow v0.3", layout="wide")
-st.title("GeoFlow v0.3")
+st.set_page_config(page_title="GeoFlow v0.3.1", layout="wide")
+st.title("GeoFlow v0.3.1")
 mode = st.sidebar.radio("Laboratory", ["Idealized simulation", "Earth"], key="lab_mode")
 if mode == "Earth":
     try:
         from geoflow.earth.ui import laboratory
 
-        laboratory()
+        laboratory(ROOT)
     except ImportError as exc:
         st.error(
             f'Install the optional Earth packages with python -m pip install -e ".[earth,ui]". {exc}'
@@ -150,7 +145,10 @@ except ValueError as exc:
 if run and config is not None:
     progress = st.progress(0.0)
     try:
+        from geoflow.solver import run_simulation
+
         result = run_simulation(config, progress.progress)
+        st.session_state["result_id"] = uuid4().hex
         st.session_state["result"] = result
         st.session_state["result_name"] = preset
         st.session_state["snapshot"] = 0
@@ -161,7 +159,17 @@ if run and config is not None:
     finally:
         progress.empty()
 
-if "result" in st.session_state:
+
+@st.fragment
+def result_view(config, preset):
+    from matplotlib.figure import Figure
+
+    from geoflow.comparison import common_times, export_comparison, frame
+    from geoflow.io import export, output_directory
+    from geoflow.plotting import LABELS, heatmap, limits
+    from geoflow.ui_render import panel
+
+    result_id = st.session_state["result_id"]
     r = st.session_state["result"]
     if config != r.config or preset != st.session_state["result_name"]:
         st.warning("Settings changed. Displaying the previous run until you run again.")
@@ -170,6 +178,7 @@ if "result" in st.session_state:
         "Pin current run as A",
         help="Keep A, change any settings and run again to compare with B.",
     ):
+        st.session_state["reference_id"] = result_id
         st.session_state["reference_run"] = r
         st.session_state["reference_bounds"] = {}
     a = st.session_state.get("reference_run")
@@ -194,29 +203,50 @@ if "result" in st.session_state:
             col.write(
                 f"{label} · {run_data.config.experiment} · {run_data.config.scheme} · {run_data.config.nx}×{run_data.config.ny}"
             )
-            col.pyplot(heatmap(frame(run_data, time_s), name, 0, arrows, shared))
+            with col:
+                panel(
+                    "map_" + label,
+                    (
+                        st.session_state["reference_id"] if label == "A" else result_id,
+                        time_s,
+                        name,
+                        arrows,
+                        shared,
+                    ),
+                    lambda data=run_data: heatmap(
+                        frame(data, time_s), name, 0, arrows, shared
+                    ),
+                )
         st.caption(
             "Shared colour scale and simulated time. Between outputs, primitive fields are linearly interpolated. Arrows show local direction with panel-specific autoscaling."
         )
         st.json({"A": a.metadata, "B": r.metadata}, expanded=False)
     else:
-        st.pyplot(heatmap(r, name, index, arrows, bounds[name]))
+        panel(
+            "map_B",
+            (result_id, index, name, arrows),
+            lambda: heatmap(r, name, index, arrows, bounds[name]),
+        )
     row = r.diagnostics[int(r.time.searchsorted(time_s))]
     st.caption(
         f"B diagnostics at {row['time_s']:.6g} s · Minimum depth {row['min_h_m']:.6g} m · Solver runtime {r.metadata['runtime_s']:.4g} s · "
         f"Accepted steps {row['steps']} · Rejected trials {row['rejected_steps']}"
     )
-    fig = Figure(figsize=(8, 3.2), layout="constrained")
-    axes = fig.subplots(1, 2)
-    for ax, key, label in zip(
-        axes,
-        ("volume_drift", "energy"),
-        ("Relative volume drift", "Energy / density (m⁵/s²)"),
-        strict=True,
-    ):
-        ax.plot(r.time / 3600, [d[key] for d in r.diagnostics])
-        ax.set(xlabel="Simulated time (h)", ylabel=label)
-    st.pyplot(fig)
+
+    def conservation_plot():
+        fig = Figure(figsize=(8, 3.2), layout="constrained")
+        axes = fig.subplots(1, 2)
+        for ax, key, label in zip(
+            axes,
+            ("volume_drift", "energy"),
+            ("Relative volume drift", "Energy / density (m⁵/s²)"),
+            strict=True,
+        ):
+            ax.plot(r.time / 3600, [d[key] for d in r.diagnostics])
+            ax.set(xlabel="Simulated time (h)", ylabel=label)
+        return fig
+
+    panel("conservation_png", result_id, conservation_plot)
     if comparing:
         key = st.selectbox(
             "Compare diagnostics",
@@ -230,18 +260,30 @@ if "result" in st.session_state:
                 "wall_time_s",
             ],
         )
-        comparison = Figure(figsize=(8, 3), layout="constrained")
-        ax = comparison.subplots()
-        for label, data in (("A", a), ("B", r)):
-            series = [d[key] for d in data.diagnostics]
-            if any(v is not None for v in series):
-                ax.plot(data.time / 3600, series, label=label)
-            else:
+        series = [
+            (label, data.time, [row[key] for row in data.diagnostics])
+            for label, data in (("A", a), ("B", r))
+        ]
+        for label, _, values in series:
+            if all(v is None for v in values):
                 st.caption(f"{label}: {key} undefined for this experiment.")
-        ax.set(xlabel="Simulated time (h)", ylabel=key)
-        if ax.lines:
-            ax.legend()
-        st.pyplot(comparison)
+
+        def diagnostic_plot():
+            comparison = Figure(figsize=(8, 3), layout="constrained")
+            ax = comparison.subplots()
+            for label, times, values in series:
+                if any(v is not None for v in values):
+                    ax.plot(times / 3600, values, label=label)
+            ax.set(xlabel="Simulated time (h)", ylabel=key)
+            if ax.lines:
+                ax.legend()
+            return comparison
+
+        panel(
+            "comparison_png",
+            (st.session_state["reference_id"], result_id, key),
+            diagnostic_plot,
+        )
         if st.button("Save comparison artifacts"):
             path = ROOT / "outputs" / f"comparison-{uuid4().hex[:12]}"
             try:
@@ -262,3 +304,7 @@ if "result" in st.session_state:
             st.error(str(exc))
     if "export_path" in st.session_state:
         st.code(st.session_state["export_path"])
+
+
+if "result" in st.session_state:
+    result_view(config, preset)

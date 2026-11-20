@@ -13,6 +13,15 @@ def frame(r: SimulationResult, t: float) -> SimulationResult:
     if not r.time[0] <= t <= r.time[-1]:
         raise ValueError("comparison time outside trajectory")
     j = int(np.searchsorted(r.time, t))
+    if r.time[j] == t:
+        sl = slice(j, j + 1)
+        return replace(
+            r,
+            time=r.time[sl].copy(),
+            h=r.h[sl].copy(),
+            u=r.u[sl].copy(),
+            v=r.v[sl].copy(),
+        )
     i = max(0, j - 1)
     weight = (t - r.time[i]) / (r.time[j] - r.time[i]) if j != i else 0.0
 

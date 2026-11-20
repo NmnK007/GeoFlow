@@ -35,9 +35,24 @@ def rusanov(
         speed = np.maximum(
             signal_speed(left, g, direction), signal_speed(right, g, direction)
         )
-    return 0.5 * (
-        flux(left, g, direction) + flux(right, g, direction) - speed * (right - left)
-    )
+    if (
+        left.dtype != right.dtype
+        or left.dtype != np.asarray(speed).dtype
+        or left.shape != right.shape
+    ):
+        # Let NumPy promote mixed types and broadcast public API inputs.
+        return 0.5 * (
+            flux(left, g, direction)
+            + flux(right, g, direction)
+            - speed * (right - left)
+        )
+    result = flux(left, g, direction)
+    result += flux(right, g, direction)
+    jump = right - left
+    jump *= speed
+    result -= jump
+    result *= 0.5
+    return result
 
 
 def rotate(q: np.ndarray, angle: float | np.ndarray) -> np.ndarray:
