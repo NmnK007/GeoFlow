@@ -1,4 +1,6 @@
-# GeoFlow v0.3.1 — Earth
+# GeoFlow v0.4 — Neural
+
+The optional Neural Laboratory compares persistence, a periodic CNN and a Fourier Neural Operator against solver-generated MUSCL–MC trajectories. See the [held-out results, methods and reproduction commands](docs/neural.md).
 
 The performance update speeds up snapshot changes and repeated Earth analysis. See the [measured performance and scientific verification report](docs/performance.md).
 

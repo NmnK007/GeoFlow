@@ -97,24 +97,13 @@ def advance(
     raise RuntimeError(f"invalid trial state at t={t:g} after {c.max_retries} retries")
 
 
-def run_simulation(
-    config: Config, progress_callback: Callable[[float], None] | None = None
-) -> SimulationResult:
-    """Integrate to each output target. Callback receives simulated fraction [0,1]."""
-    c = config
-    start = perf_counter()
-    x, y = centers(c)
-    q = initial_state(c, x, y)
-    times = np.arange(c.intervals + 1, dtype=float)
-    times[:-1] *= c.sample_s
-    times[-1] = c.duration_s
-    h, u, v = (np.empty((len(times), c.ny, c.nx)) for _ in range(3))
-    rows = []
+def evolve_to_outputs(q: np.ndarray, c: Config, times: np.ndarray):
+    """Yield accepted conserved states and step diagnostics at solver output times."""
     steps = rejects = 0
     t = dt = courant = 0.0
     max_f = float(np.max(np.abs(c.rotation)))
     rotation_cap = 0.1 / max_f if max_f else math.inf
-    for index, target in enumerate(times):
+    for target in times:
         while t < target:
             if steps >= c.max_steps:
                 raise RuntimeError(f"step limit {c.max_steps} exhausted at t={t:g}")
@@ -131,6 +120,26 @@ def run_simulation(
             courant = dt * rate
             rejects += rejected
             steps += 1
+        yield q, dt, courant, steps, rejects
+
+
+def run_simulation(
+    config: Config, progress_callback: Callable[[float], None] | None = None
+) -> SimulationResult:
+    """Integrate to each output target. Callback receives simulated fraction [0,1]."""
+    c = config
+    start = perf_counter()
+    x, y = centers(c)
+    q0 = initial_state(c, x, y)
+    times = np.arange(c.intervals + 1, dtype=float)
+    times[:-1] *= c.sample_s
+    times[-1] = c.duration_s
+    h, u, v = (np.empty((len(times), c.ny, c.nx)) for _ in range(3))
+    rows = []
+    for index, (q, dt, courant, steps, rejects) in enumerate(
+        evolve_to_outputs(q0, c, times)
+    ):
+        target = times[index]
         h[index], u[index], v[index] = primitive(q)
         volume, energy = integrals(h[index], u[index], v[index], c)
         if index == 0:
@@ -189,7 +198,7 @@ def run_simulation(
         if any(
             value is not None and not math.isfinite(value) for value in row.values()
         ):
-            raise RuntimeError(f"nonfinite diagnostic at t={t:g}")
+            raise RuntimeError(f"nonfinite diagnostic at t={target:g}")
         rows.append(row)
         if progress_callback:
             progress_callback(float(target / c.duration_s))

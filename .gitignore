@@ -12,3 +12,6 @@ data/
 *.nc4
 .env
 .copernicusmarine/
+
+*.pt
+*.pth

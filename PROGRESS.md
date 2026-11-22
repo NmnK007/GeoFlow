@@ -1,3 +1,21 @@
+# GeoFlow v0.4 Neural
+
+M1. Clean main at the existing v0.3.1 tag, 652cb6a. No new tag needed. Tracked-file scan found no credential signatures or generated data. Largest tracked file 36,914 bytes. Repeated 71 tests and all 18 scientific checks before implementation.
+
+M2. Benchmark fixed at 16 × 16 periodic cells over 200 km, H=100 m, g=9.81, 240 s per learned step. Train on at most the first six intervals per trajectory. Evaluate independent seeds at steps 1, 4 and 16, including held-out joint amplitude/location and interpolated rotation. Predeclared pilot success: lower mean dimensionless rollout error than persistence at steps 1 and 4 on ID test, finite positive depth throughout, and lower median warm CPU runtime for a matched 16-step rollout. Report long-horizon drift and generalization even if unsuccessful. Next: generate and fingerprint datasets using shared MUSCL-MC integration.
+
+M3. Generated 32 independent float64 reference trajectories in 2.27 s (17 frames at 16 × 16). Fingerprint c293ed775352f0d2a7dd46281da64e6acdd2b8c4b9373d87718369e29fa3c853. The numerical and neural reference share the original adaptive integration loop. Next: exercise models and train.
+
+M4–M5. Residual periodic CNN and two-block FNO forward passes confirmed with paired 16 × 16 fields on PyTorch 2.15.0 CPU. M6–M7. Added training-only normalization, validation selection, restartable checkpoints, positivity, mass, reference energy and two-step objectives. Next: train paired seeds 11 and 29 and score held-out rollouts.
+
+M8. Open-loop evaluator implemented with matched output times, finite/positivity checks, channel RMSE and physical drift. Six genuine training runs completed. M10 interface uses the selected trained checkpoint, a held-out seed, paired field maps, errors, and histories. Next: check scientific pilot results and run regression suite.
+
+M9. Fourteen saved fits completed across two seeds, including single-loss ablations. Final matched test trajectories and timings are in outputs/neural-pilot/ablation-report.json. Next: verify inference, UI, numerical parity and document the measured comparison.
+
+M11 complete. Final Windows suite passed 78/78, including all 71 previous tests and seven neural cases. The 18 scientific verification check dictionaries exactly matched the preserved v0.3.1 baseline. Replaying all 14 saved checkpoints on all 12 test trajectories reproduced every reported per-frame metric (168 comparisons). The installed inference CLI exported a finite 16-step trajectory. Initial testing found an unreadable mpmath directory in the project venv. The same 1.3.0 wheel was restored and the old directory retained in outputs/neural-release-v04/repair. Final pip check and Ruff passed.
+
+Release result: the supervised CNN took 5.14 ms, FNO 11.29 ms and MUSCL–MC 39.80 ms per warm CPU rollout. ID final relative L2 errors were 0.347, 0.308 and zero against the numerical reference, versus 1.134 for persistence. The CNN had lower final error than FNO on the shifted bump and unseen rotation tests. Known limits are four independent trajectories per group, two initialization seeds, one grid and a 64-minute horizon. See docs/neural.md and benchmarks/neural-results-v0.4.json. No v0.4 implementation tasks remain. Next reproduction step: run benchmarks/neural_pilot.py with a fresh output directory, or use the existing outputs/neural-pilot in the Neural Laboratory. v0.3.1 remains tagged at 652cb6a.
+
 # GeoFlow v0.3.1 — final release checkpoint
 
 M7 complete. The clean comparison against annotated tag `v0.3.0` (`5576cf9`) is recorded in [the performance report](docs/performance.md) and [the raw measurements](benchmarks/results-v0.3.1.json). These final measurements supersede the provisional numbers in the milestone history.

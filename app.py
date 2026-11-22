@@ -10,9 +10,22 @@ from geoflow.config import load_config
 
 ROOT = Path(__file__).resolve().parent
 PRESETS = sorted((ROOT / "configs").glob("*.json"))
-st.set_page_config(page_title="GeoFlow v0.3.1", layout="wide")
-st.title("GeoFlow v0.3.1")
-mode = st.sidebar.radio("Laboratory", ["Idealized simulation", "Earth"], key="lab_mode")
+st.set_page_config(page_title="GeoFlow v0.4", layout="wide")
+st.title("GeoFlow v0.4")
+mode = st.sidebar.radio(
+    "Laboratory", ["Idealized simulation", "Earth", "Neural"], key="lab_mode"
+)
+if mode == "Neural":
+    try:
+        from geoflow.neural.ui import laboratory
+
+        laboratory(ROOT)
+    except ImportError as exc:
+        st.error(f"Install the neural and ui extras. {exc}")
+    except (ValueError, OSError, RuntimeError, KeyError, EOFError) as exc:
+        st.error(f"Neural comparison unavailable: {exc}")
+    st.stop()
+
 if mode == "Earth":
     try:
         from geoflow.earth.ui import laboratory
