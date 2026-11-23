@@ -45,8 +45,11 @@ def read_checkpoint(path, m, device="cpu"):
 
 def windows(m, states, group, device):
     ids = indices(m, group)
+    selection = (
+        slice(ids[0], ids[-1] + 1) if ids == list(range(ids[0], ids[-1] + 1)) else ids
+    )
     x = torch.tensor(
-        normalize(states[ids, : m["train_steps"] + 1], m),
+        normalize(states[selection, : m["train_steps"] + 1], m),
         dtype=torch.float32,
         device=device,
     )
@@ -103,6 +106,7 @@ def train(
     weights=None,
     resume=False,
     threads=1,
+    depth=2,
 ):
     path = Path(checkpoint)
     if path.exists() and not resume:
@@ -120,7 +124,7 @@ def train(
     torch.set_num_threads(threads)
     torch.manual_seed(seed)
     m, states = load(dataset)
-    arch = {"kind": kind, "width": width, "modes": modes}
+    arch = {"kind": kind, "width": width, "modes": modes, "depth": depth}
     model = Operator(**arch).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     settings = {
@@ -146,7 +150,7 @@ def train(
     }
     if resume:
         _, ck = read_checkpoint(path, m, device)
-        if ck["architecture"] != arch or ck["settings"] != settings:
+        if ({"depth": 2} | ck["architecture"]) != arch or ck["settings"] != settings:
             raise ValueError("resume settings differ")
         model.load_state_dict(ck["last"])
         optimizer.load_state_dict(ck["optimizer"])

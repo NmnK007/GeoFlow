@@ -3,7 +3,8 @@
 import hashlib
 import json
 import tempfile
-from dataclasses import asdict
+from concurrent.futures import ProcessPoolExecutor
+from dataclasses import asdict, replace
 from pathlib import Path
 from time import perf_counter
 
@@ -16,6 +17,13 @@ from geoflow.solver import evolve_to_outputs
 from geoflow.state import conserved, primitive
 
 GROUPS = ("train", "validation", "id", "amplitude_location", "rotation")
+
+
+SCALING_GROUPS = ("train", "validation", "id", "amplitude", "position", "rotation")
+
+
+def groups(m):
+    return SCALING_GROUPS if m.get("split_protocol") == "scaling" else GROUPS
 
 
 def digest(path):
@@ -35,8 +43,12 @@ def fingerprint(manifest):
 def parameters(seed, group):
     rng = np.random.default_rng(seed)
     harder = group == "amplitude_location"
-    a = rng.uniform(1.4, 1.8) if harder else rng.uniform(0.4, 1.2)
-    lo, hi = (0.76, 0.96) if harder else (0.15, 0.65)
+    a = (
+        rng.uniform(1.4, 1.8)
+        if harder or group == "amplitude"
+        else rng.uniform(0.4, 1.2)
+    )
+    lo, hi = (0.76, 0.96) if harder or group == "position" else (0.15, 0.65)
     return {
         "seed": seed,
         "group": group,
@@ -77,8 +89,25 @@ def integrate(config, q, times):
     return states
 
 
+def _write_trajectory(task):
+    path, i, spec, config, times = task
+    c = replace(config, f_override_s_inv=spec["f"])
+    data = np.load(path, mmap_mode="r+")
+    data[i] = integrate(c, initial(c, spec), times)
+
+
 def generate(
-    out, grid=16, train=16, validation=4, test=4, steps=16, interval=240.0, seed=1200
+    out,
+    grid=16,
+    train=16,
+    validation=4,
+    test=4,
+    steps=16,
+    interval=240.0,
+    seed=1200,
+    *,
+    scaling=False,
+    workers=1,
 ):
     out = Path(out)
     if out.exists():
@@ -91,7 +120,11 @@ def generate(
         and seed >= 0
     ):
         raise ValueError("invalid grid, split count, horizon, interval or seed")
-    n = train + validation + 3 * test
+    split = SCALING_GROUPS if scaling else GROUPS
+    counts = (train, validation) + (test,) * (len(split) - 2)
+    if not 1 <= workers <= 32 or (scaling and max(counts) > 10000):
+        raise ValueError("invalid worker count or overlapping seed blocks")
+    n = sum(counts)
     shape = (n, steps + 1, 3, grid, grid)
     if n * (steps + 1) * 3 * grid**2 * 8 > 2**31:
         raise ValueError("dataset exceeds the 2 GiB generation limit")
@@ -107,7 +140,6 @@ def generate(
     )
     times = np.arange(steps + 1) * interval
     out.parent.mkdir(parents=True, exist_ok=True)
-    from dataclasses import replace
 
     start = perf_counter()
     with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
@@ -117,15 +149,19 @@ def generate(
             stage / "states.npy", "w+", dtype="float64", shape=shape
         )
         specs = []
-        for group, count in zip(
-            GROUPS, (train, validation, test, test, test), strict=True
-        ):
-            for _ in range(count):
-                i = len(specs)
-                spec = parameters(seed + i, group)
-                c = replace(config, f_override_s_inv=spec["f"])
-                states[i] = integrate(c, initial(c, spec), times)
-                specs.append(spec)
+        for block, (group, count) in enumerate(zip(split, counts, strict=True)):
+            first = seed + (10000 * block if scaling else len(specs))
+            specs.extend(parameters(first + j, group) for j in range(count))
+        tasks = [
+            (stage / "states.npy", i, spec, config, times)
+            for i, spec in enumerate(specs)
+        ]
+        if workers == 1:
+            for task in tasks:
+                _write_trajectory(task)
+        else:
+            with ProcessPoolExecutor(max_workers=workers) as pool:
+                list(pool.map(_write_trajectory, tasks))
         # Fit exclusively on the training trajectories and the short training window.
         fit_steps = min(6, steps)
         samples = np.asarray(states[:train, : fit_steps + 1])
@@ -146,6 +182,8 @@ def generate(
             "sha256": digest(stage / "states.npy"),
             "generation_s": perf_counter() - start,
         }
+        if scaling:
+            m["split_protocol"] = "scaling"
         m["fingerprint"] = fingerprint(m)
         (stage / "manifest.json").write_text(
             json.dumps(m, indent=2, allow_nan=False), encoding="utf8"
@@ -170,7 +208,7 @@ def load(path):
         states.shape != (len(specs), len(m["times"]), 3, c.ny, c.nx)
         or states.dtype != np.float64
         or len({s["seed"] for s in specs}) != len(specs)
-        or {s["group"] for s in specs} != set(GROUPS)
+        or {s["group"] for s in specs} != set(groups(m))
         or not np.all(np.asarray(m["std"]) > 0)
         or not np.isfinite(m["mean"] + m["std"]).all()
     ):

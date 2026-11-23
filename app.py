@@ -10,11 +10,20 @@ from geoflow.config import load_config
 
 ROOT = Path(__file__).resolve().parent
 PRESETS = sorted((ROOT / "configs").glob("*.json"))
-st.set_page_config(page_title="GeoFlow v0.4", layout="wide")
-st.title("GeoFlow v0.4")
+st.set_page_config(page_title="GeoFlow v0.5", layout="wide")
+st.title("GeoFlow v0.5")
 mode = st.sidebar.radio(
-    "Laboratory", ["Idealized simulation", "Earth", "Neural"], key="lab_mode"
+    "Laboratory", ["Idealized simulation", "Earth", "Neural", "HPC"], key="lab_mode"
 )
+if mode == "HPC":
+    from geoflow.hpc.ui import laboratory
+
+    try:
+        laboratory(ROOT)
+    except (OSError, ValueError, KeyError) as exc:
+        st.error(f"Benchmark unavailable: {exc}")
+    st.stop()
+
 if mode == "Neural":
     try:
         from geoflow.neural.ui import laboratory

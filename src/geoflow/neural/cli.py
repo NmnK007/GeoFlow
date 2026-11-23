@@ -22,6 +22,8 @@ def main(argv=None):
         ("seed", 1200),
     ):
         gen.add_argument("--" + name, type=int, default=default)
+    gen.add_argument("--scaling", action="store_true")
+    gen.add_argument("--workers", type=int, default=1)
     gen.add_argument("--interval", type=float, default=240.0)
     tr = sub.add_parser("train")
     tr.add_argument("dataset", type=Path)
@@ -33,6 +35,7 @@ def main(argv=None):
         ("batch", 16),
         ("patience", 8),
         ("width", 12),
+        ("depth", 2),
         ("modes", 4),
         ("threads", 1),
     ):

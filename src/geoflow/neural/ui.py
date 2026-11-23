@@ -10,7 +10,7 @@ from matplotlib.figure import Figure
 
 from geoflow.ui_render import panel
 
-from .data import GROUPS, load
+from .data import groups, load
 from .evaluate import diagnostics, rollout
 from .train import read_checkpoint
 
@@ -41,7 +41,7 @@ def laboratory(root):
         st.info("Model unavailable. Train a checkpoint with geoflow-neural train.")
         return
     path = st.selectbox("Trained checkpoint", paths, format_func=lambda p: p.name)
-    ids = [i for i, s in enumerate(m["trajectories"]) if s["group"] in GROUPS[2:]]
+    ids = [i for i, s in enumerate(m["trajectories"]) if s["group"] in groups(m)[2:]]
     idx = st.selectbox(
         "Held-out trajectory",
         ids,

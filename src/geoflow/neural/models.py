@@ -30,9 +30,14 @@ class Spectral(nn.Module):
 class Operator(nn.Module):
     """Input is normalized (h,u,v) plus a spatially constant f / 1e-4 channel."""
 
-    def __init__(self, kind, width=12, modes=4):
+    def __init__(self, kind, width=12, modes=4, depth=2):
         super().__init__()
-        if kind not in ("cnn", "fno") or not 1 <= width <= 128 or not 1 <= modes <= 64:
+        if (
+            not 1 <= depth <= 8
+            or kind not in ("cnn", "fno")
+            or not 1 <= width <= 128
+            or not 1 <= modes <= 64
+        ):
             raise ValueError("invalid model architecture")
         self.lift = nn.Conv2d(4, width, 1)
         self.local = nn.ModuleList(
@@ -44,11 +49,11 @@ class Operator(nn.Module):
                     padding=0 if kind == "fno" else 1,
                     padding_mode="circular",
                 )
-                for _ in range(2)
+                for _ in range(depth)
             ]
         )
         self.spectral = nn.ModuleList(
-            [Spectral(width, modes) for _ in range(2)] if kind == "fno" else []
+            [Spectral(width, modes) for _ in range(depth)] if kind == "fno" else []
         )
         self.head = nn.Conv2d(width, 3, 1)
 
@@ -63,9 +68,8 @@ class Operator(nn.Module):
 def normalize(x, m):
     import numpy as np
 
-    return (x - np.asarray(m["mean"])[:, None, None]) / np.asarray(m["std"])[
-        :, None, None
-    ]
+    centered = np.subtract(x, np.asarray(m["mean"])[:, None, None])
+    return np.divide(centered, np.asarray(m["std"])[:, None, None], out=centered)
 
 
 def denormalize(x, m):

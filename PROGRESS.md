@@ -1,3 +1,21 @@
+# GeoFlow v0.5 Scaling & HPC
+
+M1. Clean annotated v0.4.0 checkpoint 692be22 verified before edits (78 tests, 18 checks).
+M2. Budget: 24 steps × 240 s on a periodic 200 km square, with 24 train, 3 validation and 3 per held-out group (39 trajectories). Float64 state storage 5.71/22.85/91.41 MiB at 16/32/64. At fixed physical time, CFL substep count grows approximately linearly with grid width; integration work roughly cubically. Test 32 first, then use measured cost to decide on 64.
+M3. Added separate amplitude and position tests, independent seed blocks shared across grid sizes and nested training sets, deterministic optional process workers. Existing dataset protocol stays available. Next: pilot, training and matched scaling measurements.
+
+M4. 32-grid pilot generated nine trajectories in 1.74 s. Serial extrapolation for 39 at 64 is about one minute. Approved locally feasible 64 grid; added matched two-seed base, subset and capacity study. Next: fit and profile.
+
+M5. Staged isolated warm/cold benchmarks, per-case timings, compiled-flux parity checks and CPU profiles. Reduced normalization temporaries and copies when split indices are contiguous. M6. NVIDIA driver detects GTX 1650 (4 GiB, sm75); isolated CUDA wheel test underway.
+
+M7–M9. Completed 20 CPU fits, 96-minute comparisons through 64 squared, matched Numba trajectories, nested-grid refinement and 16-to-32/64 FNO transfer. HPC laboratory reads precomputed metrics, validates paired trajectory archives and exports selected results. Next: complete CUDA validation, final regression and release report.
+
+M6 GPU gate complete. Matched CPU/GPU comparisons ran successfully on the GTX 1650 with a separate PyTorch 2.11.0+cu128 install. All 12 paired runs, GPU batch and precision probes and two GPU training runs are included in benchmarks/hpc-results.json. The 64-grid batch-one GPU CNN took 21.39 ms versus 39.23 ms on CPU. The GPU FNO was slower on every grid for batch one.
+
+M10 complete. Installed GeoFlow 0.5.0. All 82 automated tests passed, including the benchmark metadata and HPC UI regressions. All 18 scientific checks passed and their individual result dictionaries matched v0.4. Ruff checks, dependency checks and Git whitespace checks passed. The full scaling study, limitations and commands are in docs/hpc.md. Fifty summarized runs are in benchmarks/hpc-results.json. The editable source, figures and report are ready for release review.
+
+Current status and next steps. No outstanding v0.5 implementation tasks or known regression failures. The 64-grid base CNN severely amplifies perturbation energy, the GPU FNO has higher batch-one latency than CPU, and transfer evidence covers only the tested periodic domains and seeds. The optional 128-grid run and compiled GPU execution are unmeasured. To inspect results, launch Streamlit and choose HPC. To reproduce, start the commands in docs/hpc.md with a fresh output directory. v0.4.0 remains the Git checkpoint. v0.5 changes are local for the maintainer to review and commit.
+
 # GeoFlow v0.4 Neural
 
 M1. Clean main at the existing v0.3.1 tag, 652cb6a. No new tag needed. Tracked-file scan found no credential signatures or generated data. Largest tracked file 36,914 bytes. Repeated 71 tests and all 18 scientific checks before implementation.

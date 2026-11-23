@@ -1,4 +1,6 @@
-# GeoFlow v0.4 — Neural
+# GeoFlow v0.5 — Scaling & HPC
+
+Select **HPC** in the local laboratory to explore the measured 16², 32² and 64² runs, compare prediction errors and export results. See the [scaling study and reproduction commands](docs/hpc.md).
 
 The optional Neural Laboratory compares persistence, a periodic CNN and a Fourier Neural Operator against solver-generated MUSCL–MC trajectories. See the [held-out results, methods and reproduction commands](docs/neural.md).
 
