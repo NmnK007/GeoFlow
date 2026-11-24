@@ -52,7 +52,7 @@ export default function Home() {
       <section id="labs" className="directory">
         <div className="directory-head">
           <h2>Research laboratories</h2>
-          <small>GeoFlow / v0.6</small>
+          <Link href="/research">Research &amp; verification ↗</Link>
         </div>
         <div className="lablinks">
           {entries.map(([key, name, sub, desc]) => (

@@ -11,6 +11,8 @@ from pydantic import BaseModel, ConfigDict, Field, create_model
 
 from . import service as s
 from .jobs import Jobs
+from .public import PublicAdmission, public_mode
+from .research import evidence
 
 
 class Strict(BaseModel):
@@ -77,16 +79,21 @@ class Grid(BaseModel):
 
 @asynccontextmanager
 async def lifespan(app):
+    if os.getenv("GEOFLOW_READ_ONLY", "0") not in {"0", "1"}:
+        raise ValueError("GEOFLOW_READ_ONLY requires 0 or 1")
     limits = {
         key: int(os.environ["GEOFLOW_" + key.upper()])
         for key in ("workers", "capacity", "timeout", "retention", "records")
         if "GEOFLOW_" + key.upper() in os.environ
     }
-    app.state.jobs = Jobs(
-        os.getenv("GEOFLOW_ARTIFACTS", s.ROOT / "outputs/web-jobs"), **limits
+    app.state.jobs = (
+        None
+        if public_mode()
+        else Jobs(os.getenv("GEOFLOW_ARTIFACTS", s.ROOT / "outputs/web-jobs"), **limits)
     )
     yield
-    app.state.jobs.close()
+    if app.state.jobs is not None:
+        app.state.jobs.close()
 
 
 app = FastAPI(title="GeoFlow Scientific API", version="1.0", lifespan=lifespan)
@@ -96,23 +103,19 @@ app = FastAPI(title="GeoFlow Scientific API", version="1.0", lifespan=lifespan)
 async def admission(request: Request, call_next):
     from fastapi.responses import JSONResponse
 
-    if request.method not in ("GET", "HEAD", "OPTIONS"):
-        if os.getenv("GEOFLOW_READ_ONLY", "0") == "1":
-            return JSONResponse({"detail": "this demonstration is read-only"}, 403)
-        if request.method == "POST":
-            if (
-                request.headers.get("content-type", "").split(";")[0]
-                != "application/json"
-            ):
-                return JSONResponse({"detail": "expected a JSON request"}, 415)
-            # Require bounded, known-size bodies before parsing; no uploads.
-            length = request.headers.get("content-length", "")
-            if not length.isdecimal() or len(length) > 5 or int(length) > 16384:
-                return JSONResponse(
-                    {"detail": "request exceeds 16 KiB or lacks length"}, 413
-                )
+    if request.method == "POST":
+        if request.headers.get("content-type", "").split(";")[0] != "application/json":
+            return JSONResponse({"detail": "expected a JSON request"}, 415)
+        # Require bounded, known-size bodies before parsing; no uploads.
+        length = request.headers.get("content-length", "")
+        if not length.isdecimal() or len(length) > 5 or int(length) > 16384:
+            return JSONResponse(
+                {"detail": "request exceeds 16 KiB or lacks length"}, 413
+            )
     return await call_next(request)
 
+
+app.add_middleware(PublicAdmission)
 
 V = "/api/v1"
 Demo = Literal["gaussian", "rotating"]
@@ -123,7 +126,10 @@ Model = Literal["cnn", "fno"]
 async def invalid(request, exc):
     from fastapi.responses import JSONResponse
 
-    return JSONResponse({"detail": str(exc)}, status_code=422)
+    return JSONResponse(
+        {"detail": "invalid demo parameters" if public_mode() else str(exc)},
+        status_code=422,
+    )
 
 
 @app.exception_handler(KeyError)
@@ -136,6 +142,16 @@ async def missing(request, exc):
 @app.get(V + "/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get(V + "/mode")
+def mode():
+    return {"read_only": public_mode()}
+
+
+@app.get(V + "/research")
+def research():
+    return evidence()
 
 
 @app.get(V + "/experiments")
@@ -248,11 +264,15 @@ def demo_export(demo: Demo):
 
 @app.get(V + "/earth")
 def earth(dataset: str = "arabian"):
+    if public_mode() and dataset not in {"arabian", "fixture"}:
+        raise ValueError("unknown Earth dataset")
     return s.earth_catalog(dataset)
 
 
 @app.get(V + "/earth/field", response_model=Grid)
 def ocean_field(step: int = 0, name: str = "speed", dataset: str = "arabian"):
+    if public_mode() and dataset not in {"arabian", "fixture"}:
+        raise ValueError("unknown Earth dataset")
     return s.earth_frame(step, name, dataset)
 
 
@@ -266,6 +286,8 @@ def eddies(
 ):
     from geoflow.earth.eddies import candidates
 
+    if public_mode() and dataset not in {"arabian", "fixture"}:
+        raise ValueError("unknown Earth dataset")
     d = s.earth_fields(step, dataset)
     return candidates(d, ow, sla, cells) if "sla" in d else []
 
@@ -318,7 +340,10 @@ def ocean_export():
 
 @app.get(V + "/models")
 def models():
-    return {k: {"run": s.model_row(k), "live": s.live_available(k)} for k in s.MODELS}
+    return {
+        k: {"run": s.model_row(k), "live": not public_mode() and s.live_available(k)}
+        for k in s.MODELS
+    }
 
 
 @app.get(V + "/models/{kind}/comparison", response_model=list[Grid])
@@ -341,7 +366,7 @@ def benchmark_comparison(
     if not row:
         raise HTTPException(404, "unknown benchmark")
     path = s.STUDY / "views" / (row["run"] + ".npz")
-    if not path.is_file():
+    if public_mode() or not path.is_file():
         if run in [s.model_row(k)["run"] for k in s.MODELS]:
             return s.comparison(step, channel, kind=row["method"])
         raise HTTPException(

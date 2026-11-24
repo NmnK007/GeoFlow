@@ -1,4 +1,6 @@
-# GeoFlow v0.6 — Web laboratory
+# GeoFlow v0.7 — Public beta
+
+GeoFlow studies rotating shallow-water waves, observed ocean drift and the accuracy and cost of learned forecasts. The web laboratory includes an offline, read-only visitor mode and a Research & Verification page. [Beta report and reviewer guide](docs/public-beta.md) · [Deployment and trust boundaries](docs/beta-operations.md)
 
 The Next.js application connects Simulation, Earth, Neural and HPC through a versioned FastAPI service. Open the [web setup, API guide and measured performance report](docs/web.md) for the two local startup commands and the read-only demo profile. The original Streamlit interface remains available.
 

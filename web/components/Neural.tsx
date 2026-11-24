@@ -33,7 +33,7 @@ export default function Neural() {
     [group, choose] = useState("id"),
     [member, seed] = useState("0");
   const info = useData<Models>("/models"),
-    runner = useJob(),
+    runner = useJob("neural:" + kind),
     live = runner.job?.state === "completed",
     base = live ? "/jobs/" + runner.job?.id : "/models/" + kind;
   const pair = useData<Grid[]>(
@@ -102,7 +102,7 @@ export default function Neural() {
               Show precomputed case
             </button>
           </fieldset>
-          <fieldset className="stack" disabled={runner.busy}>
+          {runner.readOnly === false && <fieldset className="stack" disabled={runner.busy}>
             <legend>New CPU inference</legend>
             <Select
               label="Test distribution"
@@ -132,7 +132,7 @@ export default function Neural() {
             {info?.data && !info.data[kind].live && (
               <small>Fresh inference requires the local v0.5 study.</small>
             )}
-          </fieldset>
+          </fieldset>}
           <JobState job={runner.job} cancel={runner.cancel} />
         </aside>
         <section className="stack">

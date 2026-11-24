@@ -22,3 +22,9 @@ web/test-results/
 web/playwright-report/
 *.tsbuildinfo
 !benchmarks/web-demo/region.nc
+
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx

@@ -1,0 +1,155 @@
+{
+  "baseline_commit": "749615a3ea8a388558c807132fa2de1ebc1a4b8d",
+  "platform": "Windows 11 build 26200, Ryzen 5 3500X, local loopback",
+  "chrome": "158.0.8127.38",
+  "node": "26.13.0",
+  "python": "3.14.6",
+  "unit": "ms",
+  "samples": {
+    "v06": {
+      "1": [
+        {
+          "landing_ms": 335.1477,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 432.2058000000002,
+          "submit_ms": 32.53759999999966,
+          "field_ms": 53.185600000000704,
+          "export_ms": 483.15740000000005,
+          "regional_map_ms": 858.1212999999998,
+          "neural_compare_ms": 52.114299999999275,
+          "hpc_filter_ms": 15.956700000000637
+        },
+        {
+          "landing_ms": 198.53780000000006,
+          "animation_frame_interval_ms": 6.953333333333338,
+          "navigation_to_map_ms": 186.64809999999989,
+          "submit_ms": 294.21410000000014,
+          "field_ms": 128.33770000000004,
+          "export_ms": 235.51739999999972,
+          "regional_map_ms": 203.88460000000032,
+          "neural_compare_ms": 67.66650000000027,
+          "hpc_filter_ms": 19.36490000000049
+        },
+        {
+          "landing_ms": 144.31280000000004,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 186.88630000000012,
+          "submit_ms": 318.5486999999998,
+          "field_ms": 41.735100000000784,
+          "export_ms": 307.2311000000009,
+          "regional_map_ms": 285.7380000000003,
+          "neural_compare_ms": 66.78679999999986,
+          "hpc_filter_ms": 16.135199999999713
+        }
+      ],
+      "4": [
+        {
+          "landing_ms": 682.9971999999998,
+          "animation_frame_interval_ms": 6.9533333333333305,
+          "navigation_to_map_ms": 230.35109999999986,
+          "submit_ms": 299.65610000000015,
+          "field_ms": 105.93000000000029,
+          "export_ms": 204.6936999999998,
+          "regional_map_ms": 208.4308000000001,
+          "neural_compare_ms": 148.17380000000048,
+          "hpc_filter_ms": 52.310199999999895
+        },
+        {
+          "landing_ms": 703.2053999999998,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 387.3113000000003,
+          "submit_ms": 113.5634,
+          "field_ms": 137.80010000000038,
+          "export_ms": 268.4459999999999,
+          "regional_map_ms": 331.7990000000009,
+          "neural_compare_ms": 159.41549999999916,
+          "hpc_filter_ms": 48.5005000000001
+        },
+        {
+          "landing_ms": 726.8747999999996,
+          "animation_frame_interval_ms": 6.9533333333333305,
+          "navigation_to_map_ms": 506.3257000000003,
+          "submit_ms": 91.0640000000003,
+          "field_ms": 88.21060000000034,
+          "export_ms": 382.0112000000008,
+          "regional_map_ms": 359.10410000000047,
+          "neural_compare_ms": 175.0720999999994,
+          "hpc_filter_ms": 67.47360000000117
+        }
+      ]
+    },
+    "v07": {
+      "1": [
+        {
+          "landing_ms": 214.1223,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 171.59079999999994,
+          "submit_ms": 269.0540000000001,
+          "field_ms": 47.25759999999991,
+          "export_ms": 451.1318000000001,
+          "regional_map_ms": 814.1924000000008,
+          "neural_compare_ms": 53.79820000000018,
+          "hpc_filter_ms": 10.989000000000487
+        },
+        {
+          "landing_ms": 310.0584,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 175.92270000000008,
+          "submit_ms": 282.2321999999999,
+          "field_ms": 54.64539999999943,
+          "export_ms": 983.4618,
+          "regional_map_ms": 285.96309999999994,
+          "neural_compare_ms": 56.144099999999526,
+          "hpc_filter_ms": 12.993199999999888
+        },
+        {
+          "landing_ms": 307.96360000000004,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 176.78250000000025,
+          "submit_ms": 278.3653999999997,
+          "field_ms": 53.667599999999766,
+          "export_ms": 227.41600000000017,
+          "regional_map_ms": 273.6819999999998,
+          "neural_compare_ms": 52.30450000000019,
+          "hpc_filter_ms": 12.019000000000233
+        }
+      ],
+      "4": [
+        {
+          "landing_ms": 673.6602000000003,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 428.41479999999865,
+          "submit_ms": 119.23420000000078,
+          "field_ms": 132.02480000000105,
+          "export_ms": 1190.2921999999999,
+          "regional_map_ms": 166.73309999999947,
+          "neural_compare_ms": 116.22550000000047,
+          "hpc_filter_ms": 38.107599999999366
+        },
+        {
+          "landing_ms": 743.0353999999998,
+          "animation_frame_interval_ms": 7.186666666666664,
+          "navigation_to_map_ms": 551.8587000000007,
+          "submit_ms": 63.29689999999937,
+          "field_ms": 144.21789999999964,
+          "export_ms": 538.2650999999987,
+          "regional_map_ms": 478.6167999999998,
+          "neural_compare_ms": 132.77649999999994,
+          "hpc_filter_ms": 36.83129999999983
+        },
+        {
+          "landing_ms": 628.5432000000001,
+          "animation_frame_interval_ms": 6.95,
+          "navigation_to_map_ms": 448.0116999999991,
+          "submit_ms": 79.73599999999897,
+          "field_ms": 122.47230000000127,
+          "export_ms": 315.8339999999989,
+          "regional_map_ms": 210.10750000000007,
+          "neural_compare_ms": 135.36529999999948,
+          "hpc_filter_ms": 39.52059999999983
+        }
+      ]
+    }
+  },
+  "read_only": false
+}

@@ -23,7 +23,7 @@ type Info = {
 export default function Simulation() {
   const presets =
       useData<Record<string, Record<string, number | string>>>("/experiments"),
-    runner = useJob();
+    runner = useJob("simulation");
   const [preset, choose] = useState("gaussian_bump"),
     [lat, latitude] = useState("0"),
     [scheme, method] = useState("rusanov"),
@@ -81,7 +81,7 @@ export default function Simulation() {
       </Heading>
       <div className="workbench">
         <aside className="stack">
-          <fieldset className="stack">
+          {runner.readOnly === false && <fieldset className="stack">
             <legend>New simulation</legend>
             <Select
               label="Experiment"
@@ -148,7 +148,7 @@ export default function Simulation() {
               Run simulation
             </button>
             <JobState job={runner.job} cancel={runner.cancel} />
-          </fieldset>
+          </fieldset>}
           <fieldset className="stack">
             <legend>Precomputed demos</legend>
             {["gaussian", "rotating"].map((d, i) => (

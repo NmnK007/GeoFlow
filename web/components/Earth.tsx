@@ -24,7 +24,7 @@ type Ocean = {
 type Track = { positions: number[][]; status: string; time_s: number[] };
 export default function Earth() {
   const [source, setSource] = useState("arabian"),
-    runner = useJob(),
+    runner = useJob("earth:" + source),
     info = useData<Ocean>("/earth?dataset=" + encodeURIComponent(source)),
     [step, slide] = useState(0),
     [field, select] = useState("speed"),
@@ -163,7 +163,7 @@ export default function Earth() {
               </>
             )}
           </fieldset>
-          <fieldset className="stack">
+          {runner.readOnly === false && <fieldset className="stack">
             <legend>New particle release</legend>
             <label>
               Longitude (°E)
@@ -279,7 +279,7 @@ export default function Earth() {
                 )}
               </div>
             </details>
-          </fieldset>
+          </fieldset>}
         </aside>
         <section className="stack">
           <Notice

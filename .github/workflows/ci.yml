@@ -12,6 +12,7 @@ jobs:
       - run: python -m pip install -e ".[dev,earth,ui,neural,web]"
       - run: python -m pytest -q
       - run: ruff check .
+      - run: python -m geoflow.cli verify --out outputs/ci-verify
 
   web-demo:
     runs-on: ubuntu-latest
@@ -19,6 +20,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: docker compose up --build --wait --wait-timeout 240
       - run: |
+          curl --fail --silent http://localhost:3000/research > /dev/null
+          curl --fail --silent http://localhost:3000/api/v1/research > /dev/null
           curl --fail --silent http://localhost:3000/api/v1/health
           curl --fail --silent http://localhost:3000/api/v1/demos/gaussian/field > /dev/null
           curl --fail --silent http://localhost:3000/api/v1/earth/field > /dev/null

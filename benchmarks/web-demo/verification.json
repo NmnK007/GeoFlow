@@ -1,0 +1,210 @@
+{
+  "passed": true,
+  "checks": {
+    "rest_periodic_0.0": {
+      "passed": true,
+      "max_abs_state_error": 0.0
+    },
+    "rest_periodic_0.0001": {
+      "passed": true,
+      "max_abs_state_error": 0.0
+    },
+    "rest_wall_0.0": {
+      "passed": true,
+      "max_abs_state_error": 0.0
+    },
+    "rest_wall_0.0001": {
+      "passed": true,
+      "max_abs_state_error": 0.0
+    },
+    "translation": {
+      "passed": true,
+      "max_abs_state_error": 0.0
+    },
+    "inertial_-0.0001": {
+      "passed": true,
+      "max_relative_velocity_l2": 8.568483634900734e-15
+    },
+    "inertial_0.0001": {
+      "passed": true,
+      "max_relative_velocity_l2": 8.568483634900734e-15
+    },
+    "gravity_wave": {
+      "passed": true,
+      "theory_m_s": 31.32091952673165
+    },
+    "bump_periodic_0": {
+      "passed": true,
+      "volume_drift": 2.134385517536999e-16,
+      "min_h_m": 99.99344600536102,
+      "depth_mirror_error_m": 0.0
+    },
+    "bump_periodic_45": {
+      "passed": true,
+      "volume_drift": 0.0,
+      "min_h_m": 99.9934821135776,
+      "depth_mirror_error_m": 2.229254050689633e-06
+    },
+    "bump_wall_0": {
+      "passed": true,
+      "volume_drift": 2.134385517536999e-16,
+      "min_h_m": 99.99344600536102,
+      "depth_mirror_error_m": 0.0
+    },
+    "bump_wall_45": {
+      "passed": true,
+      "volume_drift": 4.268771035073998e-16,
+      "min_h_m": 99.99348275167316,
+      "depth_mirror_error_m": 0.002173985556197522
+    },
+    "rossby": {
+      "passed": true,
+      "measured_m_s": -0.9079543081133413,
+      "theory_m_s": -0.9147739877204022,
+      "relative_speed_error": 0.007455043211335055,
+      "relative_height_l2": 0.17773475160026417,
+      "amplitude_ratio": 0.8172233543416699,
+      "max_volume_drift": 0.0,
+      "min_depth_m": 99.99004277569313
+    },
+    "kelvin": {
+      "passed": true,
+      "measured_m_s": 3.140211082748948,
+      "theory_m_s": 3.1622776601683795,
+      "relative_speed_error": 0.0069780644809844805,
+      "relative_height_l2": 0.029610239156938,
+      "amplitude_ratio": 0.9855210645688587,
+      "max_volume_drift": 2.1701388888888889e-16,
+      "min_depth_m": 99.99089592280919
+    },
+    "poincare": {
+      "passed": true,
+      "measured_m_s": 35.4114362838141,
+      "theory_m_s": 35.36081728395346,
+      "relative_speed_error": 0.0014314997149007525,
+      "relative_height_l2": 0.005289390400362818,
+      "amplitude_ratio": 0.9998815355349547,
+      "max_volume_drift": 0.0,
+      "min_depth_m": 99.99002141076761
+    },
+    "ten_period_jet": {
+      "passed": true,
+      "inertial_periods": 10,
+      "steps": 3350,
+      "initial_force_residual": 0.0016056069643803543,
+      "final_force_residual": 0.002933187111676546,
+      "relative_pv_anomaly_l2": 0.024420422309345123,
+      "enstrophy_change": -3.6516854554518195e-07,
+      "min_depth_m": 99.90012045437949,
+      "max_volume_drift": 1.09375e-15
+    },
+    "refinement": {
+      "passed": true,
+      "rusanov_mc": [
+        {
+          "nx": 32,
+          "relative_l1": 0.0979798929898055,
+          "relative_l2": 0.0980014206681832,
+          "order": null
+        },
+        {
+          "nx": 64,
+          "relative_l1": 0.04795425552620351,
+          "relative_l2": 0.04795611967505399,
+          "order": 1.0308268683059116
+        },
+        {
+          "nx": 128,
+          "relative_l1": 0.02360152795104418,
+          "relative_l2": 0.02360171586942991,
+          "order": 1.0227785856933096
+        },
+        {
+          "nx": 256,
+          "relative_l1": 0.01168968292810673,
+          "relative_l2": 0.011689708192778066,
+          "order": 1.0136444633368349
+        }
+      ],
+      "muscl_minmod": [
+        {
+          "nx": 32,
+          "relative_l1": 0.029576797402213337,
+          "relative_l2": 0.033887320973180014,
+          "order": null
+        },
+        {
+          "nx": 64,
+          "relative_l1": 0.00868552541893674,
+          "relative_l2": 0.011048205415169713,
+          "order": 1.7677808142496922
+        },
+        {
+          "nx": 128,
+          "relative_l1": 0.0023969705494647736,
+          "relative_l2": 0.0035380818011217577,
+          "order": 1.857400942102417
+        },
+        {
+          "nx": 256,
+          "relative_l1": 0.0006427030790656886,
+          "relative_l2": 0.0011277027970753362,
+          "order": 1.898987894153476
+        }
+      ],
+      "muscl_mc": [
+        {
+          "nx": 32,
+          "relative_l1": 0.013020640245428396,
+          "relative_l2": 0.013858499536385228,
+          "order": null
+        },
+        {
+          "nx": 64,
+          "relative_l1": 0.003382358886037742,
+          "relative_l2": 0.004128367824074066,
+          "order": 1.9446987393382036
+        },
+        {
+          "nx": 128,
+          "relative_l1": 0.0008210862683617248,
+          "relative_l2": 0.001204439337108476,
+          "order": 2.0424240319158575
+        },
+        {
+          "nx": 256,
+          "relative_l1": 0.00020808613676815942,
+          "relative_l2": 0.00036026418136317513,
+          "order": 1.9803529561271962
+        }
+      ]
+    },
+    "gaussian_diffusion": {
+      "passed": true,
+      "rusanov_mc": 0.3064195630374496,
+      "muscl_minmod": 0.05174159228733243,
+      "muscl_mc": 0.00880920393362286
+    }
+  },
+  "convergence": [
+    {
+      "nx": 32,
+      "relative_l2": 0.09801905432618224,
+      "speed_m_s": 31.27551881573555,
+      "order": null
+    },
+    {
+      "nx": 64,
+      "relative_l2": 0.047966410523665744,
+      "speed_m_s": 31.312100965082937,
+      "order": 1.031037745697164
+    },
+    {
+      "nx": 128,
+      "relative_l2": 0.023607465752398162,
+      "speed_m_s": 31.319053797838937,
+      "order": 1.0227813047899728
+    }
+  ],
+  "errors": {}
+}

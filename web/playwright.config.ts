@@ -33,7 +33,7 @@ export default defineConfig({
     {
       command:
         "node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3071",
-      cwd: web,
+      cwd: process.env.GEOFLOW_WEB_BUILD || web,
       url: "http://127.0.0.1:3071",
       timeout: 60000,
     },

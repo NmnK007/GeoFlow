@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 const out = path.resolve(
   process.env.GEOFLOW_ROOT || path.resolve(__dirname, "../.."),
-  "outputs/web-v06",
+  "outputs/beta-v07/browser",
 );
 test("navigate, integrate, inspect a frame and export", async ({
   page,

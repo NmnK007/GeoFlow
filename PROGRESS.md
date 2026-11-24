@@ -1,3 +1,15 @@
+## v0.7 public beta
+
+M1. Clean baseline at 749615a, preserved as annotated v0.6.0-verified. Existing v0.6.0 remains at 898ddbe. Git fsck reported only five dangling trees. Recovery ZIP passed CRC on 159 entries and matches the documented SHA-256. All 18 baseline checks match the verified v0.6 archive. No new evidence of tracked-file corruption. Next: research tables, fail-closed public mode, reliability checks and matched browser trials.
+
+M2. Six research tables project the archived equations, wave, drift, rollout and hardware measurements. The reference verification JSON is an exact copy of the v0.6 archive. Tests compare each table with its underlying run and compare each browser cell with the API. Public mode restricts datasets, job reads, private trajectories, mutating requests and total request load. Local job IDs survive a tab reload and transient connection failure. Next: complete both browser profiles, compare timings and record deployment gates.
+
+M3. The immutable v0.6 checkout passed 89 tests. v0.7 passed 93 tests, Ruff, package consistency, the production Next build and TypeScript checks. All 18 scientific gates reproduced the v0.6 verification file byte for byte. Tested private job failure, restart, timeout, cancellation, leased artifact expiry and queue saturation, plus public archive boundaries and admission limits. One test-client deprecation warning remains.
+
+M4 complete. All five original browser scenarios and four new scenarios passed across local profiles. Checked the phone and tablet layouts, all research table cells, tab reconnection, and the archive-only public journey. Twelve matched browser timing trials are in benchmarks/beta-browser.json. Export latency increased on both profiles. The npm audit and 30 pinned Python version lookups returned zero listed advisories. Full report and reproduction: [public beta](docs/public-beta.md). Operator checklist: [deployment](docs/beta-operations.md).
+
+Status: local v0.7 beta review complete. Docker execution, target-host security and performance, actual HTTPS and physical-device testing remain unverified. Exact next steps for the owner are license and redistribution review, target-image testing, then a staging TLS, load and rollback drill. No public service was deployed.
+
 # GeoFlow v0.6 Web
 
 CI portability fix. GitHub Linux reported six archived demo depth values differing by at most 1.42e-14 m from a fresh computation. Archived h/u/v comparisons now use rtol=1e-12 and atol=1e-12. Coordinates, times and same-runtime API parity remain exact. The solver and demo artifacts are unchanged. All seven API tests passed locally, including live neural and exact API parity. Ruff and Git whitespace checks passed. Next: commit and push this fix, then confirm the GitHub Linux test job passes.

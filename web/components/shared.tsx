@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useReadOnly } from "./Mode";
 export const api = "/api/v1";
 export type Grid = {
   vectors?: number[][] | null;
@@ -16,11 +17,14 @@ export type Job = {
   progress: number;
   error: string | null;
 };
+class ApiError extends Error {
+  constructor(public status: number, message: string) { super(message); }
+}
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const r = await fetch(api + path, init);
   if (!r.ok) {
     const e = await r.json().catch(() => ({}));
-    throw Error(
+    throw new ApiError(r.status,
       typeof e.detail === "string"
         ? e.detail
         : "Request failed (" +
@@ -44,40 +48,57 @@ export function useData<T>(path: string | null) {
   }, [path]);
   return state?.path === path ? state : undefined;
 }
-export function useJob() {
+export function useJob(scope: string) {
+  const readOnly = useReadOnly();
+  const key = "geoflow:job:" + scope;
+  const [attempt, retry] = useState(0);
   const [job, set] = useState<Job | null>(null),
     [error, err] = useState(""),
     [sending, send] = useState(false);
+  useEffect(() => {
+    set(null);
+    err("");
+    retry(0);
+    if (readOnly !== false) return;
+    const id = sessionStorage.getItem(key);
+    if (id) set({ id, state: "queued", progress: 0, error: null });
+  }, [key, readOnly]);
   const busy = sending || job?.state === "running" || job?.state === "queued";
   useEffect(() => {
     if (!job || !["queued", "running"].includes(job.state)) return;
     const c = new AbortController();
     const timer = setTimeout(() => {
       request<Job>("/jobs/" + job.id, { signal: c.signal })
-        .then(set)
+        .then(value => {set(value); err(""); retry(0);})
         .catch((e) => {
           if (!c.signal.aborted) {
-            err(e.message);
-            set(null);
+            if (e instanceof ApiError && e.status === 404) {
+              sessionStorage.removeItem(key);
+              err("Job expired or the API restarted. Submit a new run.");
+              set(null);
+            } else {
+              err("Connection interrupted. Reconnecting to your job…");
+              retry(n => n + 1);
+            }
           }
         });
-    }, 160);
+    }, Math.min(5000, 160 * 2 ** Math.min(attempt, 5)));
     return () => {
       clearTimeout(timer);
       c.abort();
     };
-  }, [job]);
+  }, [job, attempt, key]);
   async function submit(path: string, body: unknown) {
     err("");
     send(true);
     try {
-      set(
-        await request<Job>(path, {
+      const submitted = await request<Job>(path, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
-        }),
-      );
+        });
+      sessionStorage.setItem(key, submitted.id);
+      set(submitted);
     } catch (e) {
       err(String(e));
     } finally {
@@ -98,7 +119,8 @@ export function useJob() {
     error: error || job?.error,
     submit,
     cancel,
-    clear: () => set(null),
+    readOnly,
+    clear: () => {sessionStorage.removeItem(key); set(null); err(""); retry(0);},
   };
 }
 export function Notice({ error }: { error?: string | null }) {

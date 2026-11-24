@@ -98,7 +98,7 @@ docker compose up --build --wait
 docker compose down
 ```
 
-Compose binds the client to loopback, leaves the API on the internal network, uses non-root processes, sets memory and CPU limits for computation, and enables a read-only demonstration API. It includes bundled data, precomputed model outputs and health probes. The UI provides the backend's read-only response if someone tries to submit a job. No credentials are needed for these offline demos. Store private registry paths, external-data credentials and model storage on the server. Keep the numerical API behind the same-origin frontend proxy.
+Compose binds the client to loopback, leaves the API on the internal network, uses non-root processes, sets memory and CPU limits for computation, and enables a read-only demonstration API. It includes bundled data, precomputed model outputs and health probes. In v0.7 the client reads the API mode and hides live computation controls in the public demo. No credentials are needed for these offline demos. Store private registry paths, external-data credentials and model storage on the server. Keep the numerical API behind the same-origin frontend proxy.
 
 Before offering arbitrary users writable compute, add authenticated job ownership, per-user admission limits at the reverse proxy, TLS and a disk quota. Job IDs currently act as unguessable local handles. A multi-replica service needs a durable queue, independent resource-limited workers, a database for status and an artifact store with expiry. The current design supports a local researcher or a small read-only demonstration. Docker was unavailable on the Windows verification host. A Linux CI job exercises the Compose health checks, proxy, real demo fields and the read-only guard.
 

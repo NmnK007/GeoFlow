@@ -15,6 +15,8 @@ from geoflow.config import Config, load_config
 from geoflow.plotting import LABELS, field
 from geoflow.solver import SimulationResult, run_simulation
 
+from .public import public_mode
+
 ROOT = Path(os.getenv("GEOFLOW_ROOT", Path(__file__).resolve().parents[3])).resolve()
 DEMO = ROOT / "benchmarks" / "web-demo"
 STUDY = Path(os.getenv("GEOFLOW_STUDY", ROOT / "outputs/hpc-v05"))
@@ -133,7 +135,7 @@ def earth_data(dataset="arabian"):
     from geoflow.earth.data import import_region
     from geoflow.earth.fixture import fixture
 
-    if dataset not in earth_sources():
+    if dataset not in {"arabian", "fixture"} and dataset not in earth_sources():
         raise ValueError("unknown Earth dataset")
     if dataset == "fixture":
         return fixture()
@@ -163,7 +165,7 @@ def earth_catalog(dataset="arabian"):
         matches = list(csv.DictReader(stream))
     return {
         "dataset": dataset,
-        "sources": list(earth_sources()),
+        "sources": ["arabian", "fixture"] if public_mode() else list(earth_sources()),
         "times": [str(x) for x in ds.time.values],
         "fields": {
             k: v.attrs.get("units", "")

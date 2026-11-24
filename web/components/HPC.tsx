@@ -10,6 +10,7 @@ import {
   api,
   useData,
 } from "./shared";
+import { useReadOnly } from "./Mode";
 type R = {
   run: string;
   grid: number;
@@ -37,6 +38,7 @@ export default function HPC() {
     [group, dist] = useState("id"),
     [step, time] = useState("24"),
     [stat, metric] = useState("Rollout (ms)");
+  const readOnly = useReadOnly();
   const all = data?.data?.runs || [];
   const rows = all.filter(
     (r) =>
@@ -229,9 +231,10 @@ export default function HPC() {
             <Select
               label="Inspect a benchmark trajectory"
               value={selected}
-              options={["", ...rows.map((r) => r.run)]}
+              options={["", ...rows.filter(r => !readOnly || ["16-cnn-16-24-base-11-cpu-1","16-fno-16-24-base-11-cpu-1"].includes(r.run)).map((r) => r.run)]}
               onChange={setInspect}
             />
+            {readOnly && <small>Bundled field comparisons are available for the 16 × 16 base CNN and FNO. Scalar results cover all grids.</small>}
             <Notice error={pair?.error} />
             {pair?.data && (
               <div className="pair">
