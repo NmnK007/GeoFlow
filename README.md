@@ -1,4 +1,7 @@
-# GeoFlow v0.5 — Scaling & HPC
+# GeoFlow v0.6 — Web laboratory
+
+The Next.js application connects Simulation, Earth, Neural and HPC through a versioned FastAPI service. Open the [web setup, API guide and measured performance report](docs/web.md) for the two local startup commands and the read-only demo profile. The original Streamlit interface remains available.
+
 
 Select **HPC** in the local laboratory to explore the measured 16², 32² and 64² runs, compare prediction errors and export results. See the [scaling study and reproduction commands](docs/hpc.md).
 

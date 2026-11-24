@@ -9,6 +9,19 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install -e ".[dev,earth,ui,neural]"
+      - run: python -m pip install -e ".[dev,earth,ui,neural,web]"
       - run: python -m pytest -q
       - run: ruff check .
+
+  web-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up --build --wait --wait-timeout 240
+      - run: |
+          curl --fail --silent http://localhost:3000/api/v1/health
+          curl --fail --silent http://localhost:3000/api/v1/demos/gaussian/field > /dev/null
+          curl --fail --silent http://localhost:3000/api/v1/earth/field > /dev/null
+          test "$(curl --silent -o /dev/null -w '%{http_code}' -H 'Content-Type: application/json' -d '{}' http://localhost:3000/api/v1/simulations)" = 403
+      - if: always()
+        run: docker compose down --volumes

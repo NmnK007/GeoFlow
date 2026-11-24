@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      GEOFLOW_READ_ONLY: "1"
+      GEOFLOW_WORKERS: "1"
+      GEOFLOW_CAPACITY: "2"
+      GEOFLOW_TIMEOUT: "60"
+      GEOFLOW_RECORDS: "4"
+      GEOFLOW_RETENTION: "120"
+    mem_limit: 768m
+    cpus: 2
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m
+  web:
+    build:
+      context: web
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    mem_limit: 768m
+    init: true
+

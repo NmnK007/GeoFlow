@@ -15,3 +15,10 @@ data/
 
 *.pt
 *.pth
+
+web/node_modules/
+web/.next/
+web/test-results/
+web/playwright-report/
+*.tsbuildinfo
+!benchmarks/web-demo/region.nc

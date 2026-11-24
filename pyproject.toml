@@ -4,13 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geoflow"
-version = "0.5.0"
+version = "0.6.0"
 description = "A numerical laboratory for rotating shallow water"
 requires-python = ">=3.11"
 dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "ruff"]
+dev = ["pytest>=7", "ruff", "httpx==0.28.1"]
+web = ["fastapi==0.165.0", "pydantic==2.14.4", "uvicorn==0.54.0"]
 earth = ["xarray>=2024.6", "netCDF4>=1.7"]
 neural = ["torch>=2.6"]
 ui = ["streamlit>=1.40"]

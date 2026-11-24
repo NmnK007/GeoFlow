@@ -1,3 +1,21 @@
+# GeoFlow v0.6 Web
+
+M1 complete. Verified clean annotated v0.5.0 at d0e872d, all 82 baseline tests and all 18 scientific checks. The FastAPI layer will reuse package functions and the existing field definitions, a single bounded job supervisor, and curated offline demonstrations. Streamlit remains available. Next milestone is the framework-independent service layer.
+
+M2 complete. Framework-independent scientific adapters use run_simulation, plotting.field, Earth diagnostics, validated neural rollouts and the original HPC report. Jobs save float64 arrays as memory-mappable NPY files and export full results. Next: bounded workers and API.
+
+M3 implemented. Versioned HTTP routes, validated requests, asynchronous bounded jobs, timeout/cancellation, expiry, full-resolution downloads and OpenAPI docs are in place. Start the frontend against /api/v1; run tests/test_web.py to repeat parity and lifecycle checks.
+
+M4 implemented. Next.js App Router, TypeScript and Tailwind provide shared navigation, accessible controls and lazy per-frame field requests. Next: connect all four scientific laboratories.
+
+M5–M7 implemented. Simulation renders solver fields, drift diagnostics and paired Gaussian demos. Earth uses the original regional NetCDF, particle integrator and observed tracks. Neural provides paired fields and queued inference. HPC displays the original 50-run report. Four API parity/lifecycle tests pass. Next: compile the web client, verify browser workflows and refine the separate landing page.
+
+M8 complete. Slice-based simulation reads use memory maps and full precision; paired plots share limits. The landing-only procedural vortex uses bounded GPU buffers, a static poster, reduced-motion and visibility controls. Production compilation and mobile/reduced-motion and animation browser checks passed. Windows concurrent-job testing exposed a progress-file rename race; append-only progress fixed the failure and a four-job/one-rejection test passed. A clean npm installation on C: was used after corrupt bytes appeared in generated files on D:.
+
+M9 complete. The local read-only Compose profile includes health checks, bounded resources and locked frontend dependencies. Demonstrations include both Gaussian latitudes, a sourced Arabian Sea regional NetCDF and drifter tracks, archived CNN/FNO fields and the original HPC run set. Registered local regions and fresh CPU inference are optional. Local full regression passed 89 tests including bitwise live neural parity. Next: final artifact checks and repeat browser timings.
+
+M10 complete. The final D: working tree passed 89 Python tests, had 18 identical scientific check dictionaries versus v0.5, built the production client and passed all five browser scenarios. The independent clean build passed the same five browser scenarios in three repetitions. Measured medians, limitations, startup commands and architecture are in docs/web.md and benchmarks/web-results.json. Docker was unavailable locally; Linux Compose smoke checks are configured in CI and have not run in this session. The test client's deprecated HTTPX adapter emits one warning. No outstanding local v0.6 implementation tasks. Next: run the two documented startup commands, review the working tree, and verify the Compose build on a Docker host before public use. The tagged v0.5 performance-report blob was restored with its exact upstream hash after detecting local file corruption. Git fsck passed, and a separate source snapshot and verified mirror are retained under %LOCALAPPDATA%/GeoFlow/web-v06-recovery. No Git refs were changed.
+
 # GeoFlow v0.5 Scaling & HPC
 
 M1. Clean annotated v0.4.0 checkpoint 692be22 verified before edits (78 tests, 18 checks).

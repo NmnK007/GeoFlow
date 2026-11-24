@@ -1,0 +1,120 @@
+{
+  "browser": [
+    {
+      "landing_ms": 183.71569999999997,
+      "navigation_ms": 55.371700000000146,
+      "navigation_to_first_map_ms": 111.60490000000004,
+      "submit_ms": 44.54309999999987,
+      "job_observed_ms": 1383.5278,
+      "run_to_map_ms": 1386.2517999999998,
+      "slider_ms": [
+        25.155199999999695,
+        26.692099999999755,
+        19.27139999999963
+      ],
+      "field_selection_ms": 55.728399999999965,
+      "field_draw_ms": 0.19999999552965164,
+      "browser_heap_mib": 7.159584045410156
+    },
+    {
+      "landing_ms": 307.85649999999987,
+      "navigation_ms": 56.8913,
+      "navigation_to_first_map_ms": 139.1396000000002,
+      "submit_ms": 26.753400000000056,
+      "job_observed_ms": 1365.4635999999998,
+      "run_to_map_ms": 1367.4599,
+      "slider_ms": [
+        27.282400000000052,
+        30.48010000000022,
+        26.825200000000223
+      ],
+      "field_selection_ms": 60.0621000000001,
+      "field_draw_ms": 0.10000000149011612,
+      "browser_heap_mib": 6.895072937011719
+    },
+    {
+      "landing_ms": 278.64879999999994,
+      "navigation_ms": 55.06809999999996,
+      "navigation_to_first_map_ms": 130.94619999999986,
+      "submit_ms": 26.35259999999994,
+      "job_observed_ms": 1351.7406999999998,
+      "run_to_map_ms": 1353.9193,
+      "slider_ms": [
+        26.045900000000074,
+        26.583100000000286,
+        20.445400000000063
+      ],
+      "field_selection_ms": 57.6904999999997,
+      "field_draw_ms": 0.20000000298023224,
+      "browser_heap_mib": 6.867977142333984
+    }
+  ],
+  "direct": [
+    {
+      "controls_ms": 149.16080000000147,
+      "first_map_ms": 283.3865000000005
+    },
+    {
+      "controls_ms": 154.26469999999972,
+      "first_map_ms": 283.1326000000008
+    },
+    {
+      "controls_ms": 143.74789999999848,
+      "first_map_ms": 278.4489999999987
+    }
+  ],
+  "streamlit": [
+    {
+      "navigation_to_controls_ms": 7389.1772,
+      "run_to_images_ms": 3025.0766999999996,
+      "snapshot_to_image_ms": [
+        383.83939999999893,
+        280.4783000000007,
+        283.08090000000084
+      ],
+      "browser_heap_mib": 16.784934997558594
+    },
+    {
+      "navigation_to_controls_ms": 6503.5479,
+      "run_to_images_ms": 2225.9660000000003,
+      "snapshot_to_image_ms": [
+        362.8242000000009,
+        275.78409999999894,
+        244.6237999999994
+      ],
+      "browser_heap_mib": 25.414451599121094
+    },
+    {
+      "navigation_to_controls_ms": 7563.159599999999,
+      "run_to_images_ms": 2093.431700000001,
+      "snapshot_to_image_ms": [
+        278.5547999999999,
+        342.02599999999984,
+        240.5581000000002
+      ],
+      "browser_heap_mib": 16.77263641357422
+    }
+  ],
+  "concurrency_last_trial": {
+    "codes": [
+      202,
+      202,
+      202,
+      429,
+      202
+    ],
+    "submit_and_health_ms": 37.03510000000006,
+    "health_ms": 4.509499999999662,
+    "all_observed_ms": 4889.0591
+  },
+  "protocol": {
+    "trials": 3,
+    "machine": "Ryzen 5 3500X, Windows, Chrome headless, loopback",
+    "next": "16.4.6 production",
+    "baseline": "v0.5 Streamlit workflow, same default solver preset",
+    "job_slots": 1,
+    "capacity": 4,
+    "units": "ms except heap in MiB",
+    "browser_reduced_motion_for_timings": true
+  }
+}

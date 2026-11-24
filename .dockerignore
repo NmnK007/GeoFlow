@@ -1,0 +1,14 @@
+**
+!src/
+!src/**
+!configs/
+!configs/*.json
+!pyproject.toml
+!requirements-web.txt
+!benchmarks/
+!benchmarks/hpc-results.json
+!benchmarks/web-demo/
+!benchmarks/web-demo/**
+**/__pycache__/
+**/*.pyc
+

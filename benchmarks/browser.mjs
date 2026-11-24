@@ -97,7 +97,10 @@ try {
     await until(() => evaluate(firstMap).then(src => src && src !== before), "updated snapshot");
     snapshots.push(performance.now() - t);
   }
-  console.log(JSON.stringify({ navigation_to_controls_ms: ready-start, run_to_images_ms: displayed-ready, snapshot_to_image_ms: snapshots }));
+  await command("Performance.enable");
+  const { metrics } = await command("Performance.getMetrics");
+  const heap = metrics.find(row => row.name === "JSHeapUsedSize").value / 2 ** 20;
+  console.log(JSON.stringify({ navigation_to_controls_ms: ready-start, run_to_images_ms: displayed-ready, snapshot_to_image_ms: snapshots, browser_heap_mib: heap }));
   socket.send(JSON.stringify({ id: ++sequence, method: "Browser.close" }));
   await sleep(250);
 } finally {
