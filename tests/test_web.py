@@ -141,9 +141,14 @@ def test_demo_and_registered_limits(client, monkeypatch):
         ref = run_simulation(cfg)
         with ZipFile(io.BytesIO(client.get(v + f"/demos/{demo}/export").content)) as z:
             for k in ("h", "u", "v", "time", "x", "y"):
-                np.testing.assert_equal(
-                    np.load(io.BytesIO(z.read(k + ".npy"))), getattr(ref, k)
-                )
+                saved = np.load(io.BytesIO(z.read(k + ".npy")))
+                if k in ("h", "u", "v"):
+                    # Archived demos and CI may use different float64 math libraries.
+                    np.testing.assert_allclose(
+                        saved, getattr(ref, k), rtol=1e-12, atol=1e-12
+                    )
+                else:
+                    np.testing.assert_array_equal(saved, getattr(ref, k))
     monkeypatch.setenv("GEOFLOW_READ_ONLY", "1")
     assert client.post(v + "/simulations", json={}).status_code == 403
     assert client.get(v + "/demos/rotating/field").status_code == 200

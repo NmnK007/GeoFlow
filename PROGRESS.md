@@ -1,5 +1,7 @@
 # GeoFlow v0.6 Web
 
+CI portability fix. GitHub Linux reported six archived demo depth values differing by at most 1.42e-14 m from a fresh computation. Archived h/u/v comparisons now use rtol=1e-12 and atol=1e-12. Coordinates, times and same-runtime API parity remain exact. The solver and demo artifacts are unchanged. All seven API tests passed locally, including live neural and exact API parity. Ruff and Git whitespace checks passed. Next: commit and push this fix, then confirm the GitHub Linux test job passes.
+
 M1 complete. Verified clean annotated v0.5.0 at d0e872d, all 82 baseline tests and all 18 scientific checks. The FastAPI layer will reuse package functions and the existing field definitions, a single bounded job supervisor, and curated offline demonstrations. Streamlit remains available. Next milestone is the framework-independent service layer.
 
 M2 complete. Framework-independent scientific adapters use run_simulation, plotting.field, Earth diagnostics, validated neural rollouts and the original HPC report. Jobs save float64 arrays as memory-mappable NPY files and export full results. Next: bounded workers and API.
